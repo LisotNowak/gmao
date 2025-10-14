@@ -1,7 +1,9 @@
+version: "3.9"
+
 networks:
   gmao-network:
-  npm-network:   # 👈 ajout pour se brancher au réseau NPM
-    external: true   # car déjà créé par Nginx Proxy Manager
+  npm-network:
+    external: true
 
 volumes:
   pgdata:
@@ -15,10 +17,11 @@ services:
       POSTGRES_PASSWORD: D@n@kil31989
       POSTGRES_DB: gmao
     volumes:
-      - ./data/db:/var/lib/postgresql/data  # 👈 stockage local
+      - ./data/db:/var/lib/postgresql/data
     networks:
       - gmao-network
-
+      - npm-network   # pour que d'autres conteneurs sur npm-network puissent y accéder
+      
   backend:
     build:
       context: ./back
@@ -35,25 +38,37 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: D@n@kil31989
       POSTGRES_DB: gmao       
-    expose:         # 👈 uniquement exposé en interne
+      POSTGRES_HOST: gmao-db   # important pour que le backend se connecte à la DB
+    expose:
       - "3000"
     depends_on:
       - db
     networks:
       - gmao-network
-      - npm-network   # 👈 dispo dans NPM
+      - npm-network
 
   frontend:
     build:
       context: .
       dockerfile: ./front/Dockerfile
       args:
-        VITE_API_URL: "/api"   # 👈 proxy via nginx
+        VITE_API_URL: "/api"
     container_name: gmao-frontend
-    expose:         # 👈 exposé au réseau interne
+    expose:
       - "80"
     depends_on:
       - backend
     networks:
       - gmao-network
-      - npm-network   # 👈 dispo dans NPM
+      - npm-network
+
+  pgadmin:
+      image: dpage/pgadmin4:latest
+      container_name: pgadmin
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@domain.com
+        PGADMIN_DEFAULT_PASSWORD: StrongPassword
+      networks:
+        - npm-network
+      expose:
+        - "5050"
