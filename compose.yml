@@ -15,9 +15,9 @@ services:
       POSTGRES_PASSWORD: D@n@kil31989
       POSTGRES_DB: gmao
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data  # 👈 stockage local
     networks:
-      - gmao-network   # 👈 reste interne, pas exposé à NPM
+      - gmao-network
 
   backend:
     build:
