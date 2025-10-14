@@ -24,18 +24,18 @@ const port = parseInt(process.env.PORT || "3000", 10);
 app.use(cookieParser());
 
 // --- Middleware CORS ---
-const allowedOrigins = ["http://localhost"];
+// const allowedOrigins = ["http://localhost"];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

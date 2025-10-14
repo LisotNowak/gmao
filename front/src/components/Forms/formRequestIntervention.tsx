@@ -101,6 +101,16 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
     return;
   };
 
+   if (!form.typeId) {
+    alert("Le domaine d'intervention est obligatoire !");
+    return;
+  }
+
+   if (!form.localisationId) {
+    alert("La localisation est obligatoire !");
+    return;
+  }
+
   try {
     const users = await userService.getAllUsers();
     console.log(users)
@@ -216,8 +226,9 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
               <div>
                 <label htmlFor="typeId" className=" font-bold">Domaine d'intervention</label>
                 <SearchBarType
-                  onSelect={(id) => setForm((prev) => ({ ...prev, typeId: id }))} 
-                />   
+                  onSelect={(id) => setForm((prev) => ({ ...prev, typeId: id }))}                   
+                /> 
+                 {!form.typeId && <span className="text-red-500 text-sm">Ce champ est obligatoire</span>}  
               </div>
 
               <div>
@@ -226,7 +237,8 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
                   onSelect={(loc) => {
                       setForm((prev) => ({ ...prev, localisationId: loc.id }));   
                   }}
-                />      
+                /> 
+                 {!form.localisationId && <span className="text-red-500 text-sm">Ce champ est obligatoire</span>}     
               </div>          
 
             <div className="text-black bg-white">

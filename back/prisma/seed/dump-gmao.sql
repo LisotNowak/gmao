@@ -1,4 +1,4 @@
-pg_dump: warning: there are circular foreign-key constraints on this table:
+﻿pg_dump: warning: there are circular foreign-key constraints on this table:
 pg_dump: detail: Material
 pg_dump: hint: You might not be able to restore the dump without using --disable-triggers or temporarily dropping the constraints.
 pg_dump: hint: Consider using a full dump instead of a --data-only dump to avoid this problem.
@@ -48,7 +48,7 @@ COPY public."Category" (id, label, "serviceId") FROM stdin;
 64	EAU TRAITEMENT DE L'EAU	2
 65	EAU STATION TRAITEMENT DE L'EAU	2
 66	EAU RECUPERATION EAU DE PLUIE	2
-22	Pi├¿ce d├®tach├®es	1
+22	Pièce détachées	1
 23	Courroie	1
 24	Roulement	1
 25	Bagues	1
@@ -57,10 +57,10 @@ COPY public."Category" (id, label, "serviceId") FROM stdin;
 21	Filtre cabine	1
 18	Filtre GO	1
 20	Filtre Hydraulique	1
-15	Filtre ├á air principal	1
-16	Filtre ├á air secondaire	1
-17	Filtre ├á huile	1
-19	Pr├®filtre GO	1
+15	Filtre à air principal	1
+16	Filtre à air secondaire	1
+17	Filtre à huile	1
+19	Préfiltre GO	1
 79	test	2
 54	CVC CTA	2
 \.
@@ -72,8 +72,8 @@ COPY public."Category" (id, label, "serviceId") FROM stdin;
 
 COPY public."Localisation" (id, label) FROM stdin;
 1	Forts
-2	B├óti Viti
-3	B├ótiment principal
+2	Bâti Viti
+3	Bâtiment principal
 4	Chai
 5	Conditionnement
 6	Jardin
@@ -94,9 +94,9 @@ COPY public."Parent" (id, label) FROM stdin;
 --
 
 COPY public."Status" (id, label, created_at, updated_at) FROM stdin;
-1	demand├®	2025-07-30 09:25:18.266	2025-07-30 09:25:18.266
+1	demandé	2025-07-30 09:25:18.266	2025-07-30 09:25:18.266
 2	en cours	2025-07-30 09:25:18.274	2025-07-30 09:25:18.274
-3	termin├®e	2025-07-30 09:25:18.277	2025-07-30 09:25:18.277
+3	terminée	2025-07-30 09:25:18.277	2025-07-30 09:25:18.277
 4	ras	2025-07-30 14:37:21.048	2025-07-30 14:37:21.048
 5	recommander	2025-08-06 12:01:42.222	2025-08-06 12:01:42.222
 6	consommable	2025-08-06 14:15:10.175	2025-08-06 14:15:10.175
@@ -125,42 +125,42 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 95	t	conso1	conso1	\N	\N	10	\N	\N	\N	\N	\N	\N	\N	1	\N	6	\N	\N	\N	2025-08-06 12:36:52.862	2025-08-06 14:03:10.484	\N	1389al
 28	f	Tarriere boisselet	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.182	2025-07-30 09:31:59.182	\N	\N
 29	f	Tarriere souslicoff	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.183	2025-07-30 09:31:59.183	\N	\N
-30	f	Pr├®tailleuse pellenc	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.184	2025-07-30 09:31:59.184	\N	\N
+30	f	Prétailleuse pellenc	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.184	2025-07-30 09:31:59.184	\N	\N
 31	f	Effeuilleuse	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.185	2025-07-30 09:31:59.185	\N	\N
-32	f	Pulv├® 1035	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.186	2025-07-30 09:31:59.186	\N	\N
-33	f	Pulv├® mono rang	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.187	2025-07-30 09:31:59.187	\N	\N
-34	f	Pulv├® tractis	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.189	2025-07-30 09:31:59.189	\N	\N
-35	f	Pulv├® TS	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.19	2025-07-30 09:31:59.19	\N	\N
-36	f	Pulv├® MT	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.191	2025-07-30 09:31:59.191	\N	\N
-37	f	Pulv├® Tecnoma	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.192	2025-07-30 09:31:59.192	\N	\N
+32	f	Pulvé 1035	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.186	2025-07-30 09:31:59.186	\N	\N
+33	f	Pulvé mono rang	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.187	2025-07-30 09:31:59.187	\N	\N
+34	f	Pulvé tractis	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.189	2025-07-30 09:31:59.189	\N	\N
+35	f	Pulvé TS	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.19	2025-07-30 09:31:59.19	\N	\N
+36	f	Pulvé MT	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.191	2025-07-30 09:31:59.191	\N	\N
+37	f	Pulvé Tecnoma	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.192	2025-07-30 09:31:59.192	\N	\N
 38	f	Machine a tirer les fils	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.193	2025-07-30 09:31:59.193	\N	\N
 39	f	Machine a enrouler les fils	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.194	2025-07-30 09:31:59.194	\N	\N
 40	f	Epareuse	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.195	2025-07-30 09:31:59.195	\N	\N
 41	f	Epareuse taille haie	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.196	2025-07-30 09:31:59.196	\N	\N
 42	f	Treuil	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.198	2025-07-30 09:31:59.198	\N	\N
-43	f	Machine a soufr├®e	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.199	2025-07-30 09:31:59.199	\N	\N
+43	f	Machine a soufrée	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.199	2025-07-30 09:31:59.199	\N	\N
 47	f	Jeu de griffes double rang	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.203	2025-07-30 09:31:59.203	\N	\N
 48	f	Jeu de griffes mono rang	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.204	2025-07-30 09:31:59.204	\N	\N
 50	f	Disque braun	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.206	2025-07-30 09:31:59.206	\N	\N
-52	f	Chemin├® broyeur	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.207	2025-07-30 09:31:59.207	\N	\N
-53	f	Charriot ├®pamprage	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.208	2025-07-30 09:31:59.208	\N	\N
+52	f	Cheminé broyeur	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.207	2025-07-30 09:31:59.207	\N	\N
+53	f	Charriot épamprage	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.208	2025-07-30 09:31:59.208	\N	\N
 54	f	Compresseur effeuilleuse	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.21	2025-07-30 09:31:59.21	\N	\N
-56	f	Tari├¿re boisselet	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.211	2025-07-30 09:31:59.211	\N	\N
-57	f	RolÔÇÖ n sem	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.213	2025-07-30 09:31:59.213	\N	\N
+56	f	Tarière boisselet	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.211	2025-07-30 09:31:59.211	\N	\N
+57	f	"Rol'n sem"	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.213	2025-07-30 09:31:59.213	\N	\N
 58	f	Tondeuse Boisselet Coupe 45	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.214	2025-07-30 09:31:59.214	\N	\N
 59	f	Tondeuse Boisselet Coupe 50	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.215	2025-07-30 09:31:59.215	\N	\N
 8	f	Deca 	Souslikoff		\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.156	2025-07-30 09:47:00.263	\N	\N
 2	f	Rouleau Beli	Beli		\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.148	2025-07-30 09:38:09.765	\N	\N
 5	f	Cerveaux moteur boisselet	Boisselet		\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.152	2025-07-30 12:53:17.96	\N	\N
-22	f	Brosse m├®tallique boisselet	boisselet		\N	0				\N		\N	application/octet-stream	1	1	4	7	\N	\N	2025-07-30 09:31:59.173	2025-08-21 12:58:06.867	\N	\N
-46	f	Brouette ├®lectrique	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.202	2025-08-20 07:01:23.315	\N	\N
+22	f	Brosse métallique boisselet	boisselet		\N	0				\N		\N	application/octet-stream	1	1	4	7	\N	\N	2025-07-30 09:31:59.173	2025-08-21 12:58:06.867	\N	\N
+46	f	Brouette électrique	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.202	2025-08-20 07:01:23.315	\N	\N
 44	f	Baliseuse			\N	0				2025-08-01 00:00:00		\N	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.2	2025-08-20 07:01:28.759	\N	\N
 9	f	Deca Boisselet	Boisselet		\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.158	2025-07-30 12:43:44.642	\N	\N
 51	f	Brouette ma├ºon	test modif marque		\N	0				\N		\N	application/octet-stream	1	\N	4	2	\N	\N	2025-07-30 09:31:59.207	2025-08-07 07:52:40.882	\N	\N
 4	f	Rotavator vigne			\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.15	2025-07-30 12:53:39.053	\N	\N
-20	f	Racleur t├®flon jaune	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	4	\N	\N	\N	2025-07-30 09:31:59.17	2025-08-20 07:01:35.524	\N	\N
+20	f	Racleur téflon jaune	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	4	\N	\N	\N	2025-07-30 09:31:59.17	2025-08-20 07:01:35.524	\N	\N
 1	f	Rouleau faca	faca		\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.136	2025-07-30 12:52:41.883	\N	\N
-14	f	Semoir APV	APV	test cr├®ation	\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.164	2025-07-30 12:57:49.753	\N	\N
+14	f	Semoir APV	APV	test création	\N	0				\N		\N	application/octet-stream	1	1	\N	\N	\N	\N	2025-07-30 09:31:59.164	2025-07-30 12:57:49.753	\N	\N
 3	f	Brosse rotative plastique fait maison			\N	0				\N		\N	application/octet-stream	1	1	4	1	\N	\N	2025-07-30 09:31:59.149	2025-08-20 07:01:18.633	\N	\N
 10	f	Deca mono rang			\N	0				\N		\N	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.159	2025-08-20 07:01:53.497	\N	\N
 24	f	Rotofil AMG	AMG		\N	0				\N		\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.177	2025-07-30 15:15:46.867	\N	\N
@@ -172,7 +172,7 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 11	f	Rogneuse collar double rang			\N	0				\N		\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.16	2025-07-31 06:48:31.792	\N	\N
 15	f	Disque emoteur triple			\N	0				\N		\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.165	2025-07-31 06:51:44.815	\N	\N
 17	f	Disque emoteur double			\N	0				\N		\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.167	2025-07-31 06:53:37.679	\N	\N
-16	f	Disque boisselet pulv├®riseur			\N	0				\N	test	\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.166	2025-07-31 06:57:11.448	\N	\N
+16	f	Disque boisselet pulvériseur			\N	0				\N	test	\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.166	2025-07-31 06:57:11.448	\N	\N
 19	f	Semoir chollet service bleu	\N	\N	\N	\N	\N	\N	\N	\N	\N	\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.169	2025-07-31 07:10:17.437	\N	\N
 23	f	Rotofil AVIF	AVIF		\N	0				\N		\\x	application/octet-stream	1	1	4	2	\N	\N	2025-07-30 09:31:59.175	2025-07-31 07:50:17.781	\N	\N
 49	f	Disque boisselet	Boisselet	\N	\N	\N	\N	\N	\N	\N	\N	\N	application/octet-stream	1	1	4	\N	\N	\N	2025-07-30 09:31:59.205	2025-07-31 09:31:27.062	\N	\N
@@ -186,7 +186,7 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 112	t	1438.22.00			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:40:08.534	2025-08-07 08:40:08.534	\N	
 113	t	26510342			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:40:31.283	2025-08-07 08:40:31.283	\N	
 114	t	C19460/2			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:40:46.478	2025-08-07 08:40:46.478	\N	
-6	f	Arromatic	test 	test mod├¿le	\N	0	n.a	n.a	n.a	2024-12-25 00:00:00	test modif commentaire bis	\N	application/octet-stream	1	1	4	3	\N	\N	2025-07-30 09:31:59.153	2025-08-25 07:12:45.136	\N	\N
+6	f	Arromatic	test 	test modèle	\N	0	n.a	n.a	n.a	2024-12-25 00:00:00	test modif commentaire bis	\N	application/octet-stream	1	1	4	3	\N	\N	2025-07-30 09:31:59.153	2025-08-25 07:12:45.136	\N	\N
 115	t	C13114/4			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:41:05.018	2025-08-07 08:41:05.018	\N	
 116	t	AF25618			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:41:36.711	2025-08-07 08:41:36.711	\N	
 117	t	K1211-82320			\N	0	\N	\N	\N	\N	\N	\N	\N	1	15	\N	\N	\N	\N	2025-08-07 08:41:54.62	2025-08-07 08:41:54.62	\N	
@@ -217,7 +217,7 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 141	t	4816636			\N	0	\N	\N	\N	\N	\N	\N	\N	1	18	\N	\N	\N	\N	2025-08-07 08:49:42.713	2025-08-07 08:49:42.713	\N	
 142	t	MP10326			\N	0	\N	\N	\N	\N	\N	\N	\N	1	18	\N	\N	\N	\N	2025-08-07 08:50:08.022	2025-08-07 08:50:08.022	\N	
 80	t	magasin name	brand	magasin model	\N	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	4	\N	\N	\N	2025-08-01 16:57:27.136	2025-08-11 12:33:04.932	\N	1389al
-161	t	axe de v├®rin			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	4	\N	\N	\N	2025-08-07 08:59:21.218	2025-08-07 10:07:30.199	\N	E52070
+161	t	axe de vérin			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	4	\N	\N	\N	2025-08-07 08:59:21.218	2025-08-07 10:07:30.199	\N	E52070
 143	t	0293-1449			\N	0	\N	\N	\N	\N	\N	\N	\N	1	18	\N	\N	\N	\N	2025-08-07 08:50:26.848	2025-08-07 08:50:26.848	\N	
 144	t	01174423			\N	0	\N	\N	\N	\N	\N	\N	\N	1	18	\N	\N	\N	\N	2025-08-07 08:50:40.855	2025-08-07 08:50:40.855	\N	
 145	t	01180597			\N	0	\N	\N	\N	\N	\N	\N	\N	1	18	\N	\N	\N	\N	2025-08-07 08:50:54.672	2025-08-07 08:50:54.672	\N	
@@ -236,7 +236,7 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 160	t	contacteur			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 08:58:58.266	2025-08-07 08:58:58.266	\N	DG266
 162	t	indicateur de niveau			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 08:59:57.355	2025-08-07 08:59:57.355	\N	685689005
 163	t	serrure int droite			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:00:28.497	2025-08-07 09:00:28.497	\N	80029633
-164	t	r├®sistance			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:04:10.012	2025-08-07 09:04:10.012	\N	65740006
+164	t	résistance			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:04:10.012	2025-08-07 09:04:10.012	\N	65740006
 166	t	interrupteur on/off clim			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:06:45.416	2025-08-07 09:06:45.416	\N	80029834
 165	t	interrupteur clim			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:06:07.512	2025-08-07 09:06:56.202	\N	80029839
 167	t	vanne chauffage			\N	0	\N	\N	\N	\N	\N	\N	\N	1	22	\N	\N	\N	\N	2025-08-07 09:07:13.774	2025-08-07 09:07:13.774	\N	80029814
@@ -249,7 +249,7 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 174	t	945 A36			\N	0	\N	\N	\N	\N	\N	\N	\N	1	23	\N	\N	\N	\N	2025-08-07 09:10:49.545	2025-08-07 09:10:49.545	\N	
 175	t	912 A35			\N	0	\N	\N	\N	\N	\N	\N	\N	1	23	\N	\N	\N	\N	2025-08-07 09:11:22.042	2025-08-07 09:11:22.042	\N	
 158	t	SC60021CAG			\N	0	\N	\N	\N	\N	\N	\N	\N	1	21	\N	\N	\N	\N	2025-08-07 08:55:19.439	2025-08-07 12:33:05.713	\N	
-79	t	mat├®riel magasin	magasin	magasin	\N	28	\N	\N	\N	\N	\N	\N	\N	\N	\N	4	\N	\N	\N	2025-08-01 16:41:02.163	2025-08-11 08:36:53.588	\N	e15a8978
+79	t	matériel magasin	magasin	magasin	\N	28	\N	\N	\N	\N	\N	\N	\N	\N	\N	4	\N	\N	\N	2025-08-01 16:41:02.163	2025-08-11 08:36:53.588	\N	e15a8978
 99	t	2654403			\N	0	\N	\N	\N	\N	\N	\N	\N	1	17	\N	\N	\N	\N	2025-08-07 08:10:25.683	2025-08-11 12:01:36.535	\N	
 176	t	XPA 1000			\N	0	\N	\N	\N	\N	\N	\N	\N	1	23	\N	\N	\N	\N	2025-08-07 09:11:32.888	2025-08-07 09:11:32.888	\N	
 177	t	XPA 950A			\N	0	\N	\N	\N	\N	\N	\N	\N	1	23	\N	\N	\N	\N	2025-08-07 09:11:44.617	2025-08-07 09:11:44.617	\N	
@@ -275,11 +275,11 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 198	t	80029720			\N	0	\N	\N	\N	\N	\N	\N	\N	1	26	\N	\N	\N	\N	2025-08-07 09:26:42.523	2025-08-07 09:26:42.523	\N	
 45	f	Broyeur thermique RABOT	RABOT		\N	0				\N		\N	application/octet-stream	1	\N	4	1	\N	\N	2025-07-30 09:31:59.201	2025-08-05 14:16:03.781	\N	\N
 206	t	test conso	test conso	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	1	\N	6	\N	\N	\N	2025-08-11 12:50:11.857	2025-08-11 12:50:11.857	\N	test13
-227	f	Groupe Froid ch├óteau			\N	0				2025-08-11 00:00:00		\N		2	62	4	3	\N	\N	2025-08-19 07:49:44.315	2025-08-19 07:49:44.315	\N	\N
+227	f	Groupe Froid château			\N	0				2025-08-11 00:00:00		\N		2	62	4	3	\N	\N	2025-08-19 07:49:44.315	2025-08-19 07:49:44.315	\N	\N
 228	f	Groupe Froid FDL			\N	0				2025-08-11 00:00:00		\N		2	62	4	1	\N	\N	2025-08-19 07:50:06.837	2025-08-19 07:50:06.837	\N	\N
-230	f	Cellule HT b├ótiment principal			\N	0				2025-08-11 00:00:00		\N		2	63	4	2	\N	\N	2025-08-19 07:51:22.511	2025-08-19 07:51:22.511	\N	\N
+230	f	Cellule HT bâtiment principal			\N	0				2025-08-11 00:00:00		\N		2	63	4	2	\N	\N	2025-08-19 07:51:22.511	2025-08-19 07:51:22.511	\N	\N
 211	f	Echangeur primaire/secondaire local CTA			\N	0				2025-08-11 00:00:00		\N		2	55	4	3	\N	\N	2025-08-18 14:57:42.388	2025-08-19 10:17:43.462	\N	\N
-232	f	Transfo b├ótiment principal			\N	0				2025-08-11 00:00:00		\N		2	63	4	3	\N	\N	2025-08-19 07:52:01.975	2025-08-19 07:52:01.975	\N	\N
+232	f	Transfo bâtiment principal			\N	0				2025-08-11 00:00:00		\N		2	63	4	3	\N	\N	2025-08-19 07:52:01.975	2025-08-19 07:52:01.975	\N	\N
 235	f	Adoucisseur condi			\N	0				2025-08-11 00:00:00		\N		2	64	4	5	\N	\N	2025-08-19 07:53:29.493	2025-08-19 13:00:34.584	\N	\N
 233	f	Adoucisseur local CTA			\N	0				2025-08-11 00:00:00		\N		2	64	4	2	\N	\N	2025-08-19 07:52:57.099	2025-08-19 07:52:57.099	\N	\N
 212	f	Pompe Barriquand local CTA R-1			\N	0				2025-08-11 00:00:00		\N		2	56	4	3	\N	\N	2025-08-18 14:58:25.494	2025-08-18 15:04:01.491	\N	\N
@@ -287,10 +287,10 @@ COPY public."Material" (id, is_store, name, brand, model, description, quantity,
 218	f	Gerbeur Atelier 2			\N	0				2025-08-11 00:00:00		\N		2	58	4	2	\N	\N	2025-08-19 07:42:59.989	2025-08-19 07:42:59.989	\N	\N
 219	f	Frontal Atelier			\N	0				2025-08-11 00:00:00		\N		2	59	4	2	\N	\N	2025-08-19 07:43:50.061	2025-08-19 07:43:50.061	\N	\N
 221	f	Frontal condi			\N	0				2025-08-11 00:00:00		\N		2	60	4	2	\N	\N	2025-08-19 07:45:46.874	2025-08-19 07:45:46.874	\N	\N
-223	f	L├¿ve-barrique			\N	0				2025-08-11 00:00:00		\N		2	60	4	2	\N	\N	2025-08-19 07:46:37.277	2025-08-19 07:46:37.277	\N	\N
+223	f	Lève-barrique			\N	0				2025-08-11 00:00:00		\N		2	60	4	2	\N	\N	2025-08-19 07:46:37.277	2025-08-19 07:46:37.277	\N	\N
 224	f	Palan Atelier			\N	0				2025-08-11 00:00:00		\N		2	61	4	2	\N	\N	2025-08-19 07:47:17.995	2025-08-19 07:47:17.995	\N	\N
 225	f	Palan loge soudure			\N	0				2025-08-11 00:00:00		\N		2	61	4	2	\N	\N	2025-08-19 07:47:36.191	2025-08-19 07:47:36.191	\N	\N
-234	f	Adoucisseur salle d├®gustation 1			\N	0				2025-08-11 00:00:00		\N		2	64	4	3	\N	\N	2025-08-19 07:53:11.416	2025-08-19 07:53:11.416	\N	\N
+234	f	Adoucisseur salle dégustation 1			\N	0				2025-08-11 00:00:00		\N		2	64	4	3	\N	\N	2025-08-19 07:53:11.416	2025-08-19 07:53:11.416	\N	\N
 236	f	Adoucisseur chaufferie			\N	0				2025-08-11 00:00:00		\N		2	64	4	3	\N	\N	2025-08-19 07:53:47.628	2025-08-19 07:53:47.628	\N	\N
 237	f	Osmoseur R-1			\N	0				2025-08-11 00:00:00		\N		2	64	4	3	\N	\N	2025-08-19 07:54:00.797	2025-08-19 07:54:00.797	\N	\N
 238	f	Arkal 1			\N	0				2025-08-11 00:00:00		\N		2	65	4	3	\N	\N	2025-08-19 07:54:59.196	2025-08-19 07:54:59.196	\N	\N
@@ -327,7 +327,7 @@ COPY public."Documentation" (id, title, file, mimetype, "materialId") FROM stdin
 
 COPY public."Priority" (id, label) FROM stdin;
 1	urgent
-2	tr├¿s urgent
+2	très urgent
 3	classique
 \.
 
@@ -343,11 +343,11 @@ COPY public."Intervention" (id, title, description, initial_comment, final_comme
 14	Titre intervention demande	test demandeur externe	\N	\N	\N	\\x	\N	2	1	1	\N	2	1	2025-07-31 08:57:35.382	2025-07-31 08:57:35.382	Lagutere	Arnaud
 32	test intervention socket	test	\N	ras	\N	\\x	\N	1	2	3	\N	2	1	2025-08-11 08:38:58.046	2025-08-11 08:40:46.703	arnaud	lagutere
 18	test demande	test	\N	ras	\N	\\x	\N	1	1	3	\N	2	2	2025-07-31 12:17:35.697	2025-07-31 12:35:19.63	Lagutere	Arnaud
-19	test cr├®ation new	test cr├®ation new	\N	ras	\N	\\x	\N	1	3	3	\N	3	1	2025-07-31 12:34:33.616	2025-07-31 12:35:25.514	Lagutere	Arnaud
+19	test création new	test création new	\N	ras	\N	\\x	\N	1	3	3	\N	3	1	2025-07-31 12:34:33.616	2025-07-31 12:35:25.514	Lagutere	Arnaud
 9	Test Intervention	test test	\N	ras	\N	\\x	\N	1	2	3	\N	2	2	2025-07-30 14:21:30.748	2025-07-31 12:35:47.146	Lagutere	Arnaud
 33	test intervention socket bis	test	\N	ras	\N	\\x	\N	1	2	3	\N	2	1	2025-08-11 08:43:50.621	2025-08-11 08:44:38.942	arnaud	lagutere
-10	bruit ├®trange	bruit ├®trange climatisation	\N	ras	\N	\\x	\N	1	3	3	\N	1	1	2025-07-31 08:00:55.472	2025-08-01 07:29:42.915	Lagutere	Arnaud
-23	test2 depuis mat├®riel	test cr├®ation depuis mat├®riel	\N	ras	\N	\\x	\N	1	1	3	\N	2	1	2025-08-01 06:40:45.969	2025-08-01 07:52:12.161	Lagutere	Arnaud
+10	bruit étrange	bruit étrange climatisation	\N	ras	\N	\\x	\N	1	3	3	\N	1	1	2025-07-31 08:00:55.472	2025-08-01 07:29:42.915	Lagutere	Arnaud
+23	test2 depuis matériel	test création depuis matériel	\N	ras	\N	\\x	\N	1	1	3	\N	2	1	2025-08-01 06:40:45.969	2025-08-01 07:52:12.161	Lagutere	Arnaud
 7	Test Intervention	tst	\N	ras	\N	\\x	\N	1	2	3	1	2	1	2025-07-30 14:05:20.721	2025-08-01 09:00:36.508	Lagutere	Arnaud
 17	Titre intervention demande	test	\N	ras	\N	\\x	\N	1	1	3	\N	2	1	2025-07-31 09:09:50.401	2025-08-01 09:19:36.348	Lagutere	Arnaud
 25	Titre intervention demande atelier	ne fonctionne plus	\N	\N	\N	\\x	\N	1	2	2	\N	1	2	2025-08-04 12:36:47.946	2025-08-04 12:38:49.907	Lagutere	Arnaud
@@ -359,7 +359,7 @@ COPY public."Intervention" (id, title, description, initial_comment, final_comme
 28	test	test	\N	\N	\N	\\x	\N	1	1	1	\N	1	2	2025-08-07 13:07:15.277	2025-08-07 13:07:15.277	Lagutere	Arnaud
 24	Titre intervention demande atelier	ne fonctionne plus 	\N	\N	\N	\\x	\N	1	1	2	\N	2	1	2025-08-04 09:35:23.907	2025-08-07 13:53:04.217	Lagutere	Arnaud
 30	test inter	test	\N	ras	\N	\\x	\N	2	2	3	\N	2	1	2025-08-07 14:40:51.795	2025-08-21 10:26:34.289	arnaud	lagutere
-27	brosse cass├®e	la brosse est cass├®e	\N	ras	\N	\\x	\N	1	2	3	\N	2	2	2025-08-07 13:00:58.781	2025-08-21 12:10:31.443	Lagutere	Arnaud
+27	brosse cassée	la brosse est cassée	\N	ras	\N	\\x	\N	1	2	3	\N	2	2	2025-08-07 13:00:58.781	2025-08-21 12:10:31.443	Lagutere	Arnaud
 11	Titre intervention	Description intervention	\N	ras	\N	\\x	\N	1	1	3	\N	2	1	2025-07-31 08:16:01.149	2025-08-21 12:19:41.913	Lagutere	Arnaud
 40	test pwa	tes	\N	\N	\N	\\x	\N	1	2	1	\N	2	1	2025-08-21 13:24:22.36	2025-08-21 13:24:22.36	arnaud	lagutere
 \.
@@ -396,13 +396,13 @@ COPY public."MaterialIntervention" (id, "materialId", "interventionId") FROM std
 
 COPY public."Preventive" (id, title, description, process, date, "serviceId", created_at, updated_at, "statusId") FROM stdin;
 21	test	test	\N	2025-08-13 00:00:00	1	2025-08-12 09:38:48.688	2025-08-14 07:53:06.75	3
-20	pr├®vent	test	\N	2025-10-13 00:00:00	1	2025-08-12 09:28:31.478	2025-08-14 07:58:08.192	3
+20	prévent	test	\N	2025-10-13 00:00:00	1	2025-08-12 09:28:31.478	2025-08-14 07:58:08.192	3
 19	test date	test	\N	2025-08-14 00:00:00	1	2025-08-12 09:25:33.832	2025-08-18 07:16:01.797	3
-24	pr├®ventif test 12	G├®rez et suivez les interventions pour gagner du temps et prendre soin de vos salari├®s\nMaintenance pr├®ventive ┬À D├®mo interactive ┬À Exp├®rience optimale\n\nProduit : Statistiques ┬À Tarifs ┬À D├®couvrir Notre Produit	\N	2025-08-27 00:00:00	1	2025-08-14 08:03:13.776	2025-08-18 07:16:07.11	3
-25	test refacto pr├®ventif	test	\N	2025-08-26 00:00:00	2	2025-08-19 14:58:58.384	2025-08-19 15:00:42.406	3
-26	test refacto pr├®ventif	test refacto	\N	2025-08-26 00:00:00	1	2025-08-20 07:52:02.999	2025-08-21 12:09:09.591	3
-27	pr├®ventif test refacto	test 	\N	2025-08-29 00:00:00	1	2025-08-21 12:00:37.377	2025-08-21 12:09:57.701	2
-12	test pr├®ventif proche	description	\N	2025-08-12 00:00:00	1	2025-08-11 07:53:24.845	2025-08-12 09:49:08.159	3
+24	préventif test 12	Gérez et suivez les interventions pour gagner du temps et prendre soin de vos salariés\nMaintenance préventive ┬À Démo interactive ┬À Expérience optimale\n\nProduit : Statistiques ┬À Tarifs ┬À Découvrir Notre Produit	\N	2025-08-27 00:00:00	1	2025-08-14 08:03:13.776	2025-08-18 07:16:07.11	3
+25	test refacto préventif	test	\N	2025-08-26 00:00:00	2	2025-08-19 14:58:58.384	2025-08-19 15:00:42.406	3
+26	test refacto préventif	test refacto	\N	2025-08-26 00:00:00	1	2025-08-20 07:52:02.999	2025-08-21 12:09:09.591	3
+27	préventif test refacto	test 	\N	2025-08-29 00:00:00	1	2025-08-21 12:00:37.377	2025-08-21 12:09:57.701	2
+12	test préventif proche	description	\N	2025-08-12 00:00:00	1	2025-08-11 07:53:24.845	2025-08-12 09:49:08.159	3
 23	test	test	\N	2025-08-13 00:00:00	2	2025-08-12 13:48:24.025	2025-08-12 13:48:42.893	3
 \.
 

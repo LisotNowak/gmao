@@ -114,10 +114,10 @@ const TestHomePage = () => {
                     <p className="text-black font-bold text-center">Créer préventif</p> 
                     </div>
                     
-                    <div className="flex flex-col items-center">
+                    {/* <div className="flex flex-col items-center">
                         <button type="button" className="btn btn-circle w-20 h-20 md:w-20 md:h-20 lg:w-20 lg:h-20 btn-info hover:bg-info-focus hover:text-white" aria-label="Accéder aux analyses"><Icon path={mdiChartBox} size={2.5} /></button>
                     <p className="text-black font-bold text-center">Analyses</p> 
-                    </div>
+                    </div> */}
                     
                     {service?.id === 1 && (
                         <>

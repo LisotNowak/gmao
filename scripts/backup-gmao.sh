@@ -8,8 +8,8 @@
 DOCKER_CONTAINER="gmao-db"
 DB_NAME="gmao"
 DB_USER="postgres"
-BACKUP_DIR="/home/username/backups"       # historique
-SEED_DIR="/home/username/prisma/seed"     # dernier dump pour seed
+BACKUP_DIR="/home/admdocker/gmao/Projet-GMAO/backups"       # historique
+SEED_DIR="/home/admdocker/gmao/Projet-GMAO/back/prisma/seed"     # dernier dump pour seed
 RETENTION_DAYS=7
 
 # Création des dossiers si besoin
@@ -49,12 +49,12 @@ echo "✅ Backup + Seed terminé."
 # Instructions pour automatisation
 
 # Rendre le script exécutable :
-# chmod +x /home/username/scripts/backup-gmao.sh
+# chmod +x /home/admdocker/gmao/Projet-GMAO/scripts/backup-gmao.sh
 
 # Planifier le script avec cron (exemple : tous les jours à 2h00) :
 # crontab -e
 
 # Puis ajouter la ligne :
-# 0 2 * * * /home/username/scripts/backup-gmao.sh
+# 0 2 * * * /home/admdocker/gmao/Projet-GMAO/scripts/backup-gmao.sh
 
-# Logs : tout est enregistré dans /home/username/scripts/backup.log.
+# Logs : tout est enregistré dans /home/admdocker/gmao/Projet-GMAO/scripts/backup-gmao.sh
