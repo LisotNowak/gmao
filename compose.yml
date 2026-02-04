@@ -17,11 +17,11 @@ services:
       POSTGRES_PASSWORD: D@n@kil31989
       POSTGRES_DB: gmao
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     networks:
       - gmao-network
       - npm-network   # pour que d'autres conteneurs sur npm-network puissent y accéder
-      
+
   backend:
     build:
       context: ./back
