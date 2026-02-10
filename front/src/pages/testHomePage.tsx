@@ -1,5 +1,5 @@
 /** biome-ignore-all assist/source/organizeImports: <Linter> */
-import { mdiAlert, mdiCalendarClock, mdiCalendarPlus, mdiCartVariant, mdiChartBox, mdiCog, mdiMessageAlert, mdiProgressWrench, mdiTools } from "@mdi/js";
+import { mdiAlert, mdiCalendarClock, mdiCalendarPlus, mdiCartVariant, mdiCog, mdiMessageAlert, mdiProgressWrench, mdiTools } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
