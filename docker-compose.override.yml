@@ -1,0 +1,23 @@
+# Configuration locale - override automatique pour docker-compose up
+# Ce fichier est automatiquement appliqué localement et ignoré en prod
+
+version: "3.9"
+
+services:
+  db:
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+  backend:
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+
+  frontend:
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+
+  pgadmin:
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"

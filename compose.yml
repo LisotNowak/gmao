@@ -34,13 +34,13 @@ services:
       - ./back/.env
     container_name: gmao-backend    
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: D@n@kil31989
       POSTGRES_DB: gmao       
       POSTGRES_HOST: gmao-db   # important pour que le backend se connecte à la DB
-    expose:
-      - "3000"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
     depends_on:
       - db
     networks:
@@ -52,10 +52,10 @@ services:
       context: .
       dockerfile: ./front/Dockerfile
       args:
-        VITE_API_URL: "/api"
+        VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: gmao-frontend
-    expose:
-      - "80"
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
     depends_on:
       - backend
     networks:
