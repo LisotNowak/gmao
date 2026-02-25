@@ -20,6 +20,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       DATABASE_URL: postgresql://${EXTERNAL_DB_USER}:${EXTERNAL_DB_PASSWORD}@${EXTERNAL_DB_HOST}:${EXTERNAL_DB_PORT:-5432}/${EXTERNAL_DB_NAME}
+      RESET_DATABASE: ${RESET_DATABASE:-false}
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     networks:

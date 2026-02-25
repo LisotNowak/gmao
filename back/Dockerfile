@@ -3,20 +3,11 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci --prefer-offline --no-audit
+
 COPY . .
 
-ARG POSTGRES_USER
-ARG POSTGRES_PASSWORD
-ARG POSTGRES_DB
-
-# Définir DATABASE_URL pour prisma generate
-# ENV DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
-
-# Générer Prisma client dans node_modules/.prisma/client
-RUN npx prisma generate
-
-# Build TypeScript
+# Build TypeScript without running prisma generate
 RUN npm run build
 
 # Image finale
@@ -32,14 +23,20 @@ ENV NODE_ENV=production
 ENV DATABASE_URL=${DATABASE_URL}
 
 # Installation du client PSQL
-RUN apk add --no-cache postgresql-client
+RUN apk add --no-cache postgresql-client bash
 
 # Copier le dump de données dans le container
 COPY prisma/seed/dump-gmao-data.sql /tmp/dump-gmao-data.sql
+COPY prisma/seed/cleanup.sql /tmp/cleanup.sql
+COPY prisma/seed/finalize.sql /tmp/finalize.sql
 
 # Appliquer les migrations puis le dump de données puis démarrer le serveur
 CMD sh -c "\
+    echo 'Generating Prisma client...' && \
+    node --max-old-space-size=4096 node_modules/.bin/prisma generate && \
+    echo 'Running migrations...' && \
     npx prisma migrate deploy && \
-    psql $DATABASE_URL -f /tmp/dump-gmao-data.sql && \
+    if [ \"\$RESET_DATABASE\" = \"true\" ]; then echo 'Cleaning up data...' && psql \$DATABASE_URL -f /tmp/cleanup.sql && echo 'Restoring data...' && psql \$DATABASE_URL -f /tmp/dump-gmao-data.sql && echo 'Finalizing sequences...' && psql \$DATABASE_URL -f /tmp/finalize.sql; fi && \
+    echo 'Starting application...' && \
     node dist/app.js \
 "
