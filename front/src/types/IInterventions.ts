@@ -21,10 +21,10 @@ export type IIntervention = {
     label: string
   }
   priorityId: number | null
-  type: {
+  type?: {
     id: number,
     label: string
-  }
+  } | null
   requestor_firstname: string,
   requestor_lastname: string ,
   materials: {

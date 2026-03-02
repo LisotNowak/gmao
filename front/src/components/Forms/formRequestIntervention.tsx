@@ -101,10 +101,7 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
     return;
   };
 
-   if (!form.typeId) {
-    alert("Le domaine d'intervention est obligatoire !");
-    return;
-  }
+   // typeId is optional now, no need to block submission if missing
 
    if (!form.localisationId) {
     alert("La localisation est obligatoire !");
@@ -224,11 +221,13 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
             </div>
 
               <div>
-                <label htmlFor="typeId" className=" font-bold">Domaine d'intervention</label>
+                <label htmlFor="typeId" className=" font-bold">
+                Domaine d'intervention (facultatif)
+              </label>
                 <SearchBarType
                   onSelect={(id) => setForm((prev) => ({ ...prev, typeId: id }))}                   
                 /> 
-                 {!form.typeId && <span className="text-red-500 text-sm">Ce champ est obligatoire</span>}  
+              {/* champ optionnel, pas de message d'erreur */}
               </div>
 
               <div>

@@ -51,6 +51,8 @@
  *           example: 4
  *         typeId:
  *           type: integer
+ *           nullable: true
+ *           description: "ID du domaine d'intervention (facultatif)"
  *           example: 6
  *         created_at:
  *           type: string

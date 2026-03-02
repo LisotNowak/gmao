@@ -252,7 +252,7 @@ useEffect(() => {
                       {/* Type */}
                       <div className="text-left">
                         <p className="font-semibold text-gray-600 text-center">Type d'intervention :</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type.label}</p>
+                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label ?? '—'}</p>
                       </div>
                       {/* Date */}
                       <div className="text-left md:text-right">
@@ -278,7 +278,7 @@ useEffect(() => {
 
                       <div className="flex flex-col">
                         <p className="font-semibold text-gray-600 text-center">Type</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label}</p>
+                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label ?? '—'}</p>
                       </div>
 
                       <div className="flex flex-col">

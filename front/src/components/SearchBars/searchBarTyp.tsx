@@ -12,7 +12,8 @@ export default function SearchBarType({ onSelect }: Props) {
 
   const filteredTypes = allTypes?.filter((type) => {
     const search = searchText.toLowerCase();
-    return type.label?.toLowerCase().includes(search);
+    // protect against null type or missing label
+    return type?.label?.toLowerCase().includes(search);
   }) || [];
 
   const handleSelect = (type: { id: number; label: string }) => {
@@ -48,10 +49,10 @@ export default function SearchBarType({ onSelect }: Props) {
               {(searchText ? filteredTypes : allTypes)?.map((type) => (
                 // biome-ignore lint/a11y/useKeyWithClickEvents: <linter capricieux>
                 <li
-                  key={type.id}
-                  onClick={() => handleSelect(type)}
+                  key={type?.id}
+                  onClick={() => type && handleSelect(type)}
                   className="p-2 hover:bg-gray-100 cursor-pointer" >                 
-                  {type.label}
+                  {type?.label ?? ''}
                 </li>                
               ))}
               {(searchText && filteredTypes.length === 0) && (
