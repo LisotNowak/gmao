@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <linter capricieux> */
-import { mdiAlertCircle, mdiCheckCircleOutline, mdiCloseCircleOutline, mdiTools } from '@mdi/js';
+import { mdiAlertCircle, mdiCheckCircleOutline, mdiCloseCircleOutline, mdiTools, mdiPencil } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -54,6 +54,27 @@ const InterventionsRequested = () => {
   const allInterventions: IIntervention[] = Array.isArray(data) ? data : [];
   const socket = useSocket();
   const [selectedInterventionId, setSelectedInterventionId] = useState<number | null>(null);
+  // édition d'une intervention
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editIntervention, setEditIntervention] = useState<IIntervention | null>(null);
+
+  const initialFormData = React.useMemo(() => {
+    if (!editIntervention) return undefined;
+    return {
+      title: editIntervention.title ?? "",
+      description: editIntervention.description ?? "",
+      // IIntervention stores nested objects, not raw ids
+      categoryId: editIntervention.category?.id ?? null,
+      localisationId: editIntervention.localisation?.id ?? null,
+      priorityId: editIntervention.priorityId ?? null,
+      picture: "",
+      requestor_firstname: editIntervention.requestor_firstname ?? "",
+      requestor_lastname: editIntervention.requestor_lastname ?? "",
+      serviceId: editIntervention.serviceId,
+      materialId: editIntervention.materials[0]?.material?.id ?? null,
+      typeId: editIntervention.type?.id ?? null,
+    };
+  }, [editIntervention]);
 
   // Gérer les urgences des interventions
   const updateDisplayInterventions = useCallback((interventions: IIntervention[]) => {
@@ -140,6 +161,18 @@ useEffect(() => {
     setShowValidateForm(true); 
   };
 
+  const handleEditClick = (intervention: IIntervention) => {
+    setEditIntervention(intervention);
+    setShowEditForm(true);
+  };
+
+  const handleEditSuccess = () => {
+    addToast("Intervention modifiée avec succès", "success");
+    setShowEditForm(false);
+    setEditIntervention(null);
+    refetch();
+  };
+
   const handleValidationSubmit = async (code: number) => {
     if (!selectedInterventionId) return;
 
@@ -198,6 +231,16 @@ useEffect(() => {
               </div>
             </div>
             <FormInterventionRequest show={showForm} onClose={() => setShowForm(false)} />
+            {/* formulaire de modification */}
+            {editIntervention && (
+              <FormInterventionRequest
+                show={showEditForm}
+                onClose={() => { setShowEditForm(false); setEditIntervention(null); }}
+                interventionId={editIntervention.id}
+                initialData={initialFormData}
+                onSuccess={handleEditSuccess}
+              />
+            )}
           </section>
 
           <section className="flex flex-col items-center w-full font-bold text-black ">
@@ -293,6 +336,9 @@ useEffect(() => {
                         <p className=" p-2 bg-gray-200 rounded text-center">{`${intervention.requestor_lastname} ${intervention.requestor_firstname}`}</p>
                       </div>
                       <div className="flex justify-end gap-2 mt-2 px-4">
+                      <button type="button" className="btn btn-primary hover:text-white" onClick={() => handleEditClick(intervention)}>
+                        <Icon path={mdiPencil} size={1.5} />
+                      </button>
                       <button type="button" className="btn btn-success hover:text-white" onClick={() => handleValidate(intervention.id)}>
                         <Icon path={mdiCheckCircleOutline} size={1.5} />
                       </button>

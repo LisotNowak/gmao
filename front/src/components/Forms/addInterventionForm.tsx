@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import { useParams } from "react-router-dom";
 import { useCreateIntervention } from "../../hooks/useInterventions";
 import serviceService from "../../services/services.service";
+import interventionService from "../../services/intervention.service";
 import type { IInterventionFormData } from '../../types/IInterventions';
 import SearchBarLocalisation from "../SearchBars/searchBarLocalisation";
 import SearchBarPriority from '../SearchBars/searchBarPriority';
@@ -15,6 +16,12 @@ import Dialog from "../Utils/dialog";
 type Props = {
   show: boolean;
   onClose: () => void;
+  // données initiales pour l'édition (facultatif)
+  initialData?: IInterventionFormData;
+  // id de l'intervention à modifier
+  interventionId?: number;
+  // callback appelé après succès d'une création ou mise à jour
+  onSuccess?: () => void;
 };
 
 type Toast = {
@@ -40,13 +47,14 @@ function ToastContainer({ toasts }: ToastContainerProps) {
   );
 };
 
-export default function FormInterventionRequest ({ show, onClose }: Props) {
+export default function FormInterventionRequest ({ show, onClose, initialData, interventionId, onSuccess }: Props) {
   
   const [toasts, setToasts] = React.useState<
     { id: number; type: "info" | "success" | "error"; message: string }[]
     >([]);
   const { serviceLabel } = useParams<{ serviceLabel: string }>();
   const [serviceId, setServiceId] = useState<number | null>(null);
+  const [validationCode, setValidationCode] = useState<string>("");
 
   // fonction pour ajouter un toast
   const addToast = (message: string, type: "info" | "success" | "error" = "info") => {
@@ -90,6 +98,13 @@ useEffect(() => {
     typeId: null,    
   });
 
+  // si on passe des données initiales (édition), on les injecte dans le formulaire
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    }
+  }, [initialData]);
+
   const { mutate: createIntervention } = useCreateIntervention(); 
 
   if (!show) return null;
@@ -107,45 +122,65 @@ useEffect(() => {
     return;
   };
 
-  try {     
-    createIntervention(
-      { ...form, serviceId },
-      {
-        onSuccess: () => {          
-          setForm({
-            title: "",
-            description: "",
-            categoryId: null,
-            localisationId: null,
-            priorityId: null,
-            picture: "",
-            typeId: null,
-            serviceId: null,
-            materialId: null,
-            requestor_firstname: "",
-            requestor_lastname: "",             
-          });
-          addToast("Intervention créée avec succès", "success");          
-          setTimeout(() => {
-            onClose()
-          }, 1000);          
-        },
-        
-        onError: (err) => {
-          console.error("Erreur création intervention", err);
-          addToast("Erreur lors de la création de l'intervention", "error");
-        },
+  try {
+    if (interventionId) {
+      // édition, nécessite un code de validation
+      const numericCode = Number(validationCode);
+      if (!Number.isInteger(numericCode)) {
+        addToast("Code de validation invalide", "error");
+        return;
       }
-    );   
-  } catch(error){
-    console.error("Erreur lors de la récupération des utilisateurs", error);
-    addToast("Erreur lors de la vérification du code.", "error");
-  }
+      await interventionService.updateIntervention(
+        interventionId,
+        { ...form, serviceId },
+        numericCode
+      );
+      addToast("Intervention modifiée avec succès", "success");
+      if (onSuccess) onSuccess();
+      setValidationCode("");
+      onClose();
+    } else {
+      // création
+      createIntervention(
+        { ...form, serviceId },
+        {
+          onSuccess: () => {          
+            setForm({
+              title: "",
+              description: "",
+              categoryId: null,
+              localisationId: null,
+              priorityId: null,
+              picture: "",
+              typeId: null,
+              serviceId: null,
+              materialId: null,
+              requestor_firstname: "",
+              requestor_lastname: "",             
+            });
+            addToast("Intervention créée avec succès", "success");          
+            setTimeout(() => {
+              onClose()
+            }, 1000);          
+          },
+          
+          onError: (err) => {
+            console.error("Erreur création intervention", err);
+            addToast("Erreur lors de la création de l'intervention", "error");
+          },
+        }
+      );   
+      }
+    } catch(error){
+      console.error("Erreur lors de la récupération des utilisateurs", error);
+      addToast("Erreur lors de la vérification du code.", "error");
+    }
   };
 
   return (
-        <>
-        <Dialog onClose= {onClose} closeOnOutsideClick >
+    <>
+
+    <Dialog onClose= {onClose} closeOnOutsideClick >
          
           <form
             onSubmit={handleSubmit}
@@ -274,12 +309,26 @@ useEffect(() => {
             </div>
 
   {/* Boutons d'action sur la ligne entière */}
+            {/* si on édite, afficher un champ pour le code de validation */}
+            {interventionId && (
+              <div className="col-span-3 flex flex-col items-center gap-2">
+                <label htmlFor="validationCode" className="font-medium">Code de validation</label>
+                <input
+                  id="validationCode"
+                  type="password"
+                  value={validationCode}
+                  onChange={(e) => setValidationCode(e.target.value)}
+                  required
+                  className="input border border-black bg-white text-black w-full mb-2 rounded focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+            )}
             <div className="col-span-3 flex justify-center gap-4 mt-6">
               <button type="button" onClick={onClose} className="btn btn-error p-2 hover:text-white">
                 Annuler
               </button>
               <button type="submit" className="btn btn-success font-bold p-2 hover:text-white">
-                Confirmer ma demande
+                {interventionId ? "Enregistrer modifications" : "Confirmer ma demande"}
               </button>
             </div>
           </div>

@@ -132,12 +132,61 @@ export const updateIntervention = async (
       return res.status(400).json({ message: "Code de validation invalide" });
     }
 
+    // Désémantique les identifiants de relation envoyés par le front
+    const {
+      categoryId,
+      localisationId,
+      priorityId,
+      typeId,
+      serviceId,
+      materialId,
+      ...restFields
+    } = otherData as any;
+
     // Construire les données à mettre à jour
     // biome-ignore lint/suspicious/noExplicitAny: <Linter capricieux>
-        const data: any = {
-      ...otherData,
+    const data: any = {
+      ...restFields,
       updated_at: new Date(),
     };
+
+    // Gérer les mises à jour des relations en fonction des ids
+    if (categoryId !== undefined) {
+      data.category = categoryId
+        ? { connect: { id: Number(categoryId) } }
+        : { disconnect: true };
+    }
+    if (localisationId !== undefined) {
+      data.localisation = localisationId
+        ? { connect: { id: Number(localisationId) } }
+        : { disconnect: true };
+    }
+    if (priorityId !== undefined) {
+      data.priority = priorityId
+        ? { connect: { id: Number(priorityId) } }
+        : { disconnect: true };
+    }
+    if (typeId !== undefined) {
+      data.type = typeId
+        ? { connect: { id: Number(typeId) } }
+        : { disconnect: true };
+    }
+    if (serviceId !== undefined) {
+      data.service = serviceId
+        ? { connect: { id: Number(serviceId) } }
+        : { disconnect: true };
+    }
+
+    // gérer associations matériel si l'id est présent
+    if (materialId !== undefined) {
+      // on supprime les anciens liens et on ajoute le nouveau (ou aucun si null)
+      data.materials = materialId
+        ? {
+            deleteMany: {},
+            create: [{ material: { connect: { id: Number(materialId) } } }],
+          }
+        : { deleteMany: {} };
+    }
 
     // Gérer la mise à jour de la relation status si présente
     if (statusId !== undefined) {

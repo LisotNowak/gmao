@@ -60,6 +60,16 @@ const interventionService = {
     async finalizationIntervention (id: number, final_comment: string, validation_code: number) {
         const response = await api.patch(`/interventions/${id}`, { final_comment, statusId: 3,validation_code });
         return response.data as IIntervention;
+    },
+
+    // Mettre à jour une intervention (nécessite code de validation)
+    async updateIntervention(
+        id: number,
+        data: Partial<IInterventionFormData>,
+        validation_code: number
+    ): Promise<IIntervention> {
+        const response = await api.patch(`/interventions/${id}`, { ...data, validation_code });
+        return response.data as IIntervention;
     }
 };
 
