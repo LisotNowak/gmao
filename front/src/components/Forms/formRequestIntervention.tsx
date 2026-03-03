@@ -103,10 +103,7 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
 
    // typeId is optional now, no need to block submission if missing
 
-   if (!form.localisationId) {
-    alert("La localisation est obligatoire !");
-    return;
-  }
+   // Localisation n'est plus obligatoire — ne bloque plus l'envoi
 
   try {
     const users = await userService.getAllUsers();
@@ -236,8 +233,7 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
                   onSelect={(loc) => {
                       setForm((prev) => ({ ...prev, localisationId: loc.id }));   
                   }}
-                /> 
-                 {!form.localisationId && <span className="text-red-500 text-sm">Ce champ est obligatoire</span>}     
+                />
               </div>          
 
             <div className="text-black bg-white">
