@@ -16,6 +16,7 @@ import StockOut from "./pages/stockOut";
 import Store from "./pages/store";
 import StockHistoryPage from "./pages/storehistory";
 import TestHomePage from "./pages/testHomePage";
+import InterventionHistory from "./pages/interventionHistory";
 
 export default function Router(){
     return (        
@@ -34,6 +35,7 @@ export default function Router(){
             <Route path="/magasin/historique/:serviceLabel" element={<StockHistoryPage />} />
             <Route path="/magasin/recommander/:serviceLabel" element={<AlertArticles />} />
             <Route path="/magasin/consommable/:serviceLabel" element={<AlertConsumable />} />
+            <Route path="/historique/:serviceLabel" element={<InterventionHistory />} />
             <Route path="/admin" element={<RequireAuth>  <AdminPage /> </RequireAuth>} />
             <Route path="/admin/login" element={<Login />} />
         </Routes>

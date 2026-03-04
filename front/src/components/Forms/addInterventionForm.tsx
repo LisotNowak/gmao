@@ -114,6 +114,25 @@ useEffect(() => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const MAX_SIZE_MB = 7;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      addToast(`Image trop grande (max ${MAX_SIZE_MB} Mo)`, "error");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const parts = result.split(',');
+      const base64 = parts[1] ?? parts[0];
+      setForm((prev) => ({ ...prev, picture: base64, mimetype: file.type }));
+    };
+    reader.readAsDataURL(file);
+  };
+
  const handleSubmit =async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -286,26 +305,17 @@ useEffect(() => {
               
               </div>
 
-    {/* <div>
-      <label htmlFor="picture" className=" font-medium">Ajouter une photo</label>
+    <div>
+      <label htmlFor="picture" className="font-medium">Photo (facultatif)</label>
       <input
         id="picture"
         name="picture"
         type="file"
-        onChange={handleChange}
+        accept="image/*"
+        onChange={handleFileChange}
         className="file-input file-input-neutral w-full"
       />
     </div>
-
-    <div>
-      <label htmlFor="wantsToBeContacted" className="block mb-1 font-medium">Me prévenir à la fin</label>
-      <input
-        type="checkbox"
-        id="wantsToBeContacted"
-        defaultChecked
-        className="toggle toggle-success"
-      />
-    </div> */}   
             </div>
 
   {/* Boutons d'action sur la ligne entière */}

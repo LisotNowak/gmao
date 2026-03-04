@@ -7,14 +7,8 @@ export const interventionSchema = Joi.object({
   final_comment: Joi.string().allow(null, ''),
   begin_date: Joi.date().iso().allow(null),
   validation_code: Joi.number().integer().allow(null),
-  picture: Joi.binary().allow(null),
-  mimetype: Joi.string().valid(
-    'image/png',
-    'image/jpeg',
-    'image/webp',
-    'image/gif',
-    'application/pdf'
-  ).allow(null),
+  picture: Joi.string().allow(null, ''),
+  mimetype: Joi.string().allow(null, ''),
   materialId: Joi.number().integer().allow(null),
   serviceId: Joi.number().integer().allow(null),
   localisationId: Joi.number().integer().allow(null),

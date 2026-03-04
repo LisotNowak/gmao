@@ -37,13 +37,10 @@ function Header (){
                   </li>
                   {serviceLabel === "atelier" ? <li className='hover:bg-gray-200 rounded'>
                   <Link to={`/magasin/${serviceLabel}`} aria-label="Lien vers la page magasin">Magasin</Link>
-                  </li> : ""}               
-                  {/* <li className='hover:bg-gray-200 rounded'>
-                  <Link to="/" aria-label="Lien vers la page analyses">Analyses</Link>
-                  </li>
+                  </li> : ""}
                   <li className='hover:bg-gray-200 rounded'>
-                  <Link to="/" aria-label="Lien vers la page historique">Historique</Link>
-                  </li>                   */}
+                  <Link to={`/historique/${serviceLabel}`} aria-label="Lien vers l'historique des interventions">Historique</Link>
+                  </li>
                </ul>
             </div>
          </div>

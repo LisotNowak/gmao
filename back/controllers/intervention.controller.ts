@@ -6,6 +6,155 @@ import { createHttpError } from "../utils/httpError";
 
 const prisma = new PrismaClient();
 
+function serializeIntervention(intervention: any) {
+  if (!intervention) return intervention;
+  const copied = { ...intervention } as any;
+
+  // ensure a mime value is always returned so the frontend can rely on it
+  // (some old DB rows may have been created before we tracked the type)
+  if (!copied.mimetype) {
+    // if there's a picture we guess png, otherwise leave null
+    copied.mimetype = copied.picture ? 'image/png' : null;
+  }
+
+  try {
+    const pic = copied.picture;
+    const mime = copied.mimetype || 'image/png';
+    if (!pic) return copied;
+
+    // some database rows end up with an *empty object* ({}), typically because
+    // the binary column contained a zero‑length buffer.  Express/JSONify will
+    // happily send that object to the client, where it becomes `{}' and
+    // breaks the image handling logic.  treat it as meaning “no picture”.
+    if (typeof pic === 'object' && Object.keys(pic).length === 0) {
+      copied.picture = null;
+      copied.mimetype = null; // clear stale mime type when there is no data
+      return copied;
+    }
+
+    // debug unexpected structures – we'll convert them or null them later
+    if (typeof pic === 'object' && !Buffer.isBuffer(pic) && !(Array.isArray((pic as any).data))) {
+      console.log('[serializeIntervention] unexpected picture shape', pic);
+    }
+
+    // Buffer (Node) -> base64
+    if (Buffer.isBuffer(pic)) {
+      const str = `data:${mime};base64,${pic.toString('base64')}`;
+      console.log(`[serializeIntervention] converted buffer, len=${str.length}`);
+      copied.picture = str;
+      return copied;
+    }
+
+    // Prisma/JSON serialized buffer -> { type: 'Buffer', data: [...] }
+    if (typeof pic === 'object' && pic.data) {
+      let arr: number[] | undefined;
+      if (Array.isArray((pic as any).data)) {
+        arr = (pic as any).data;
+      } else if (typeof (pic as any).data === 'object') {
+        arr = Object.values((pic as any).data) as number[];
+      }
+      if (arr) {
+        const buf = Buffer.from(arr);
+        // if the buffer has no bytes treat as absent
+        if (buf.length === 0) {
+          copied.picture = null;
+          copied.mimetype = null;
+          return copied;
+        }
+        const str = `data:${mime};base64,${buf.toString('base64')}`;
+        console.log(`[serializeIntervention] converted json-array buffer, len=${str.length}`);
+        copied.picture = str;
+        return copied;
+      }
+    }
+    // handle case where pic is an object whose keys are numeric indices (JSONified Buffer)
+    if (typeof pic === 'object' && !Buffer.isBuffer(pic) && !Array.isArray(pic)) {
+      const keys = Object.keys(pic);
+      if (keys.length > 0 && keys.every((k) => /^\d+$/.test(k))) {
+        const arr = keys.map((k) => Number((pic as any)[k]));
+        const buf = Buffer.from(arr);
+        if (buf.length === 0) {
+          copied.picture = null;
+          copied.mimetype = null;
+          return copied;
+        }
+        const str = `data:${mime};base64,${buf.toString('base64')}`;
+        console.log(`[serializeIntervention] converted numeric-keyed buffer, len=${str.length}`);
+        copied.picture = str;
+        return copied;
+      }
+    }
+
+    // If it's already a string but not a data: URI, assume base64
+    if (typeof pic === 'string') {
+      // if the string looks like an object ({}) or is clearly not valid
+      // base64 we drop it.
+      if (pic === '{}' || pic.trim() === '') {
+        console.log('[serializeIntervention] dropping empty string picture');
+        copied.picture = null;
+        copied.mimetype = null;
+        return copied;
+      }
+      if (pic.startsWith('data:')) {
+        console.log('[serializeIntervention] picture already data URI, len=', pic.length);
+        copied.picture = pic;
+      } else {
+        const str = `data:${mime};base64,${pic}`;
+        console.log('[serializeIntervention] built data URI from string, len=', str.length);
+        copied.picture = str;
+      }
+      return copied;
+    }
+  } catch (err) {
+    console.warn('Erreur sérialisation image intervention', err);
+  }
+
+  // if we ended up here without converting picture to a string, null it so
+  // the client never sees an unusable value (prevents broken-img icons).
+  if (copied.picture && typeof copied.picture !== 'string') {
+    copied.picture = null;
+  }
+  return copied;
+}
+
+// Servir la photo d'une intervention en binaire
+export const getInterventionPicture = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) return res.status(400).json({ message: "ID invalide" });
+
+  try {
+    const intervention = await prisma.intervention.findUnique({
+      where: { id },
+      select: { picture: true, mimetype: true },
+    });
+
+    if (!intervention?.picture) {
+      return res.status(404).json({ message: "Pas de photo pour cette intervention" });
+    }
+
+    const contentType = intervention.mimetype || "image/png";
+    const rawBuffer = intervention.picture as Buffer;
+
+    // Ancien bug : Joi.binary() stockait les octets ASCII du base64 (pas le binaire décodé).
+    // On détecte le cas : PNG commence par 0x89, JPEG par 0xFF.
+    // Si le premier octet est un caractère ASCII imprimable, c'est du base64 texte → décoder.
+    const isProbablyBinary = rawBuffer[0] === 0x89 || rawBuffer[0] === 0xFF || rawBuffer[0] === 0x47;
+    const imageBuffer = isProbablyBinary
+      ? rawBuffer
+      : Buffer.from(rawBuffer.toString("ascii"), "base64");
+
+    res.set("Content-Type", contentType);
+    res.set("Cache-Control", "public, max-age=86400");
+    res.send(imageBuffer);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Créer une intervention
 export const createIntervention = async (
   req: Request,
@@ -13,13 +162,15 @@ export const createIntervention = async (
   next: NextFunction
 ) => {
   try {
-     const {
+    const {
       materialId: materialIdFromBody,
       serviceId,
       localisationId,
       categoryId,
       priorityId,
-      typeId,      
+      typeId,
+      picture: pictureBase64,
+      mimetype,
       ...rest
     } = req.body;
     
@@ -34,36 +185,47 @@ export const createIntervention = async (
         : Number(materialIdFromBody);
 
     // Création de l'intervention
-    const newIntervention = await prisma.intervention.create({
-      data: {
-        ...rest,
-        service: serviceId
-          ? { connect: { id: Number(serviceId) } }
-          : undefined,
-        localisation: localisationId
-          ? { connect: { id: Number(localisationId) } }
-          : undefined,
-        status: { connect: { id: 1 } },
-        category: categoryId
-          ? { connect: { id: Number(categoryId) } }
-          : undefined,
-        priority: priorityId
-          ? { connect: { id: Number(priorityId) } }
-          : undefined,
-        type: typeId ? { connect: { id: Number(typeId) } } : undefined,       
-
-        materials: materialId
-          ? {
-              create: [
-                {
-                  material: {
-                    connect: { id: materialId },
-                  },
+    const dataToCreate: any = {
+      ...rest,
+      service: serviceId
+        ? { connect: { id: Number(serviceId) } }
+        : undefined,
+      localisation: localisationId
+        ? { connect: { id: Number(localisationId) } }
+        : undefined,
+      status: { connect: { id: 1 } },
+      category: categoryId
+        ? { connect: { id: Number(categoryId) } }
+        : undefined,
+      priority: priorityId
+        ? { connect: { id: Number(priorityId) } }
+        : undefined,
+      type: typeId ? { connect: { id: Number(typeId) } } : undefined,
+      materials: materialId
+        ? {
+            create: [
+              {
+                material: {
+                  connect: { id: materialId },
                 },
-              ],
-            }
-          : undefined,
-      },
+              },
+            ],
+          }
+        : undefined,
+    };
+
+    // Si le front envoie une image en base64, convertir en Buffer pour Prisma
+    if (pictureBase64) {
+      try {
+        dataToCreate.picture = Buffer.from(pictureBase64, "base64");
+        dataToCreate.mimetype = mimetype || null;
+      } catch (err) {
+        console.warn("Impossible de décoder l'image base64", err);
+      }
+    }
+
+    const newIntervention = await prisma.intervention.create({
+      data: dataToCreate,
       include: {
         materials: {
           include: {
@@ -86,8 +248,9 @@ export const createIntervention = async (
         interventionId: newIntervention.id,
       },
     });
-    io.emit("new_intervention", newIntervention);
-    res.status(201).json({ material: newIntervention });
+    const serialized = serializeIntervention(newIntervention);
+    io.emit("new_intervention", serialized);
+    res.status(201).json({ material: serialized });
   } catch (error) {
     next(error);
   }  
@@ -195,12 +358,30 @@ export const updateIntervention = async (
       data.status = { connect: { id: Number(status) } };
     }
 
+    // Si le front envoie une image en base64 dans les champs, la convertir en Buffer
+    if ((restFields as any).picture !== undefined) {
+      const pic = (restFields as any).picture;
+      const mime = (restFields as any).mimetype;
+      if (pic === null) {
+        data.picture = null;
+        data.mimetype = null;
+      } else if (typeof pic === "string" && pic.length > 0) {
+        try {
+          data.picture = Buffer.from(pic, "base64");
+          data.mimetype = mime || null;
+        } catch (err) {
+          console.warn("Impossible de décoder l'image base64 lors de la mise à jour", err);
+        }
+      }
+    }
+
     // Mettre à jour l'intervention
     const interventionToUpdate = await prisma.intervention.update({
       where: { id },
       data,
     });
-     io.emit("update_intervention", interventionToUpdate);
+     const serializedUpdate = serializeIntervention(interventionToUpdate);
+    io.emit("update_intervention", serializedUpdate);
     res.status(200).json({ message: `${interventionToUpdate.title} mis à jour avec succès` });
   } catch (error) {
     next(error);
@@ -349,7 +530,9 @@ export const getAllInterventions = async (
       }
     });
     
-    res.status(200).json(interventions);
+    const serialized = interventions.map(serializeIntervention);
+    console.log("[server] getAllInterventions serialized sample", serialized.slice(0,3).map((i: any)=>({id:i.id, picture:i.picture? (typeof i.picture==='string'?i.picture.substring(0,30):'[obj]'):null, mimetype:i.mimetype})));
+    res.status(200).json(serialized);
   } catch (error) {
     next(error);
   }
@@ -376,7 +559,9 @@ export const getAllInterventionsAtelier = async (
                 created_at: "asc",
             }
         });
-        res.status(200).json(interventions);
+        const serialized = interventions.map(serializeIntervention);
+        console.log("[server] atelier interventions sample", serialized.slice(0,3).map((i: any)=>({id:i.id,picture:i.picture?typeof i.picture==='string'?i.picture.substring(0,30):'[obj]':null})));
+        res.status(200).json(serialized);
     } catch (error) {
        next(error); 
     }
@@ -390,9 +575,11 @@ export const getAllInterventionsSg = async (
 ) => {
     try {
         const interventions = await prisma.intervention.findMany({
-            where: {serviceId: 2},
+          where: {serviceId: 2},
         });
-        res.status(200).json(interventions);
+        const serialized = interventions.map(serializeIntervention);
+        console.log("[server] SG interventions sample", serialized.slice(0,3).map((i: any)=>({id:i.id,picture:i.picture?typeof i.picture==='string'?i.picture.substring(0,30):'[obj]':null})));
+        res.status(200).json(serialized);
     } catch (error) {
        next(error); 
     }
@@ -434,9 +621,9 @@ export const getInterventionById= async (
     // Je vais rechercher en bdd l'intervention'sélectionnée
     try {
         const interventionById = await prisma.intervention.findUnique({
-            where: {id: interventionId}
+          where: {id: interventionId}
         })
-        res.status(200).json(interventionById);
+        res.status(200).json(serializeIntervention(interventionById));
     } catch (error) {
         next(error); 
     }
@@ -487,7 +674,9 @@ export const getInterventionsByStatus = async (
     // Extraire uniquement les interventions des liens
     const interventionsLinked = interventions.map((si: { intervention: any; }) => si.intervention);
 
-    res.status(200).json(interventionsLinked);
+    const serialized = interventionsLinked.map(serializeIntervention);
+
+    res.status(200).json(serialized);
   } catch (error) {
     next(error)
   }
@@ -530,7 +719,8 @@ export const getInterventionsByMaterial = async (
         }       
     });
     const interventions = materialInterventions.map((link: { intervention: any; }) => link.intervention);
-    res.status(200).json(interventions);
+    const serialized = interventions.map(serializeIntervention);
+    res.status(200).json(serialized);
   } catch (error) {
     next(error)
   }

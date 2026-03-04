@@ -186,6 +186,14 @@ const InterventionsInProgress = () => {
                    
                              {/* Icône de priorité */}
                              <div className="flex items-center gap-2 items-center">
+                               {/* miniature photo si disponible */}
+                               {intervention.picture && (
+                                 <img
+                                   src={`/api/interventions/${intervention.id}/picture`}
+                                   alt="miniature"
+                                   className="w-8 h-8 rounded object-cover"
+                                 />
+                               )}
                                <div className="w-6 h-6 flex items-center justify-center">
                                {intervention.priorityId === 2 && (
                                  <Icon path={mdiAlertCircle} size={2.5} className="bg-red-500 text-white rounded-full  " />
@@ -231,6 +239,16 @@ const InterventionsInProgress = () => {
                             <p className="font-semibold text-gray-600 text-center">Description </p>
                             <p className=" p-2 bg-gray-200 rounded text-center">{intervention.description}</p>
                           </div>
+                          {intervention.picture && (
+                            <div className="flex flex-col items-center">
+                              <p className="font-semibold text-gray-600 text-center">Photo</p>
+                              <img
+                                src={`/api/interventions/${intervention.id}/picture`}
+                                alt="Photo intervention"
+                                className="max-h-40 max-w-full rounded mt-1 object-contain"
+                              />
+                            </div>
+                          )}
                          
                            <div className="mr-4">
                             <strong>Intervenant :</strong>

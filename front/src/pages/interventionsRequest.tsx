@@ -97,6 +97,7 @@ const InterventionsRequested = () => {
       updateDisplayInterventions(data);
     }
   }, [data, updateDisplayInterventions]);
+
   
 // WebSocket
 useEffect(() => {
@@ -267,6 +268,14 @@ useEffect(() => {
 
                       {/* Icône de priorité */}
                       <div className="flex items-center gap-2 items-center">
+                        {/* miniature photo si disponible */}
+                        {intervention.picture && (
+                          <img
+                            src={`/api/interventions/${intervention.id}/picture`}
+                            alt="miniature"
+                            className="w-8 h-8 rounded object-cover"
+                          />
+                        )}
                         <div className="w-6 h-6 flex items-center justify-center">
                         {intervention.priorityId === 2 && (
                           <Icon path={mdiAlertCircle} size={2.5} className="bg-red-500 text-white rounded-full " />
@@ -335,6 +344,16 @@ useEffect(() => {
                         <p className="font-semibold text-gray-600">Demandeur</p>
                         <p className=" p-2 bg-gray-200 rounded text-center">{`${intervention.requestor_lastname} ${intervention.requestor_firstname}`}</p>
                       </div>
+                      {intervention.picture && (
+                        <div className="flex flex-col items-center">
+                          <p className="font-semibold text-gray-600 text-center">Photo</p>
+                          <img
+                            src={`/api/interventions/${intervention.id}/picture`}
+                            alt="Photo intervention"
+                            className="max-h-40 max-w-full rounded mt-2 object-contain"
+                          />
+                        </div>
+                      )}
                       <div className="flex justify-end gap-2 mt-2 px-4">
                       <button type="button" className="btn btn-primary hover:text-white" onClick={() => handleEditClick(intervention)}>
                         <Icon path={mdiPencil} size={1.5} />

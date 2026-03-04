@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createIntervention, deleteIntervention, getAllInterventions, getAllInterventionsAtelier, getAllInterventionsSg, getInterventionByCategory, getInterventionById, getInterventionsByMaterial, getInterventionsByStatus, updateIntervention, updateInterventionStatus } from "../controllers/intervention.controller";
+import { createIntervention, deleteIntervention, getAllInterventions, getAllInterventionsAtelier, getAllInterventionsSg, getInterventionByCategory, getInterventionById, getInterventionPicture, getInterventionsByMaterial, getInterventionsByStatus, updateIntervention, updateInterventionStatus } from "../controllers/intervention.controller";
 import errorHandler from "../middlewares/errorHandler";
 import { validate } from '../middlewares/validate';
 import { interventionSchema } from "../validators/intervention.validator";
@@ -275,6 +275,7 @@ interventionRouter.patch('/:id', validate(interventionSchema), updateInterventio
  *       404:
  *         description: Intervention non trouvée
  */
+interventionRouter.get('/:id/picture', getInterventionPicture, errorHandler);
 interventionRouter.get('/:id', getInterventionById, errorHandler );
 
 /**

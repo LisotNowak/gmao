@@ -1,5 +1,5 @@
 /** biome-ignore-all assist/source/organizeImports: <Linter> */
-import { mdiAlert, mdiCalendarClock, mdiCalendarPlus, mdiCartVariant, mdiCog, mdiMessageAlert, mdiProgressWrench, mdiTools } from "@mdi/js";
+import { mdiAlert, mdiCalendarClock, mdiCalendarPlus, mdiCartVariant, mdiCog, mdiHistory, mdiMessageAlert, mdiProgressWrench, mdiTools } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -114,11 +114,13 @@ const TestHomePage = () => {
                     <p className="text-black font-bold text-center">Créer préventif</p> 
                     </div>
                     
-                    {/* <div className="flex flex-col items-center">
-                        <button type="button" className="btn btn-circle w-20 h-20 md:w-20 md:h-20 lg:w-20 lg:h-20 btn-info hover:bg-info-focus hover:text-white" aria-label="Accéder aux analyses"><Icon path={mdiChartBox} size={2.5} /></button>
-                    <p className="text-black font-bold text-center">Analyses</p> 
-                    </div> */}
-                    
+                    <Link to={`/historique/${serviceLabel}`} aria-label="Lien vers l'historique des interventions">
+                        <div className="flex flex-col items-center">
+                            <button type="button" className="btn btn-circle w-20 h-20 md:w-20 md:h-20 lg:w-20 lg:h-20 btn-neutral hover:text-white" aria-label="Accéder à l'historique des interventions"><Icon path={mdiHistory} size={2.5} /></button>
+                            <p className="text-black font-bold text-center">Historique</p>
+                        </div>
+                    </Link>
+
                     {service?.id === 1 && (
                         <>
                         <Link to={`/magasin/consommable/${serviceLabel}`} aria-label="Lien vers la page alerte consommable">
@@ -140,7 +142,7 @@ const TestHomePage = () => {
                 {/* Fin boutons d'action */}
 
                 {/* Carte d'activité */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 w-full max-w-7xl ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4 w-full max-w-7xl ">
 
                     <Link to={`/demandes/${serviceLabel}`} aria-label="Lien vers la page  demandes d'intervention">
                     <div className="card max-w-96 shadow-sm text-black flex flex-col items-center hover:bg-gray-400 border border-white hover:cursor-pointer hover:shadow-lg transition
@@ -177,6 +179,20 @@ const TestHomePage = () => {
                         <div className="badge badge-error font-bold w-16 h-16 md:w-20 md:h-20 rounded-full  flex items-center justify-center text-4xl "> {preventivesInterventions.length} </div>
                         <div className="card-body items-center text-center">
                             <h2 className="card-title">Interventions préventives</h2>                        
+                        </div>
+                    </div>
+                    </Link>
+                    <Link to={`/historique/${serviceLabel}`} aria-label="Lien vers l'historique des interventions">
+                    <div className="card max-w-96 shadow-sm text-black flex flex-col items-center hover:bg-gray-400 border border-white hover:cursor-pointer hover:shadow-lg transition
+                    duration-300 ease-in-out">
+                        <figure className="px-10 pt-10">
+                        <Icon path={mdiHistory} size={4} className="md:size-6" />
+                        </figure>
+                        <div className="badge badge-neutral font-bold w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-4xl text-white">
+                            {allInterventions.filter((i) => i.serviceId === service?.id).length}
+                        </div>
+                        <div className="card-body items-center text-center">
+                            <h2 className="card-title">Historique</h2>
                         </div>
                     </div>
                     </Link>
