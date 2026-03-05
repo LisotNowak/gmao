@@ -98,7 +98,7 @@ const InterventionHistory = () => {
         <Header />
       </div>
 
-      <main className="min-h-screen pt-4 bg-white pb-10 overflow-auto px-4 md:px-8">
+      <main className="min-h-screen pt-4 bg-white pb-10 overflow-auto px-4 md:px-8 text-black">
         <section className="flex flex-col items-center gap-2">
           <h1 className="text-black text-3xl font-bold mb-2">Historique des interventions</h1>
         </section>
