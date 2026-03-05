@@ -75,13 +75,19 @@ const TestHomePage = () => {
         if (preventive.serviceId !== service?.id) return false;
         if (preventive.statusId !== 1) return false;
 
-        const preventiveDate = new Date(preventive.date); 
+        const preventiveDate = new Date(preventive.date);
         const now = new Date();
         const twoWeeksLater = new Date();
         twoWeeksLater.setDate(now.getDate() + 14);
 
         return preventiveDate >= now && preventiveDate <= twoWeeksLater;
-    });    
+    });
+
+    const overduePreventives = allPreventives.filter((preventive) => {
+        if (preventive.serviceId !== service?.id) return false;
+        if (preventive.statusId !== 1) return false;
+        return new Date(preventive.date) < new Date();
+    });
 
     return(
         
@@ -150,7 +156,7 @@ const TestHomePage = () => {
                         <figure className="px-10 pt-10">
                         <Icon path={mdiMessageAlert} size={4} className="md:size-6" />
                         </figure>
-                        <div className="badge badge-error font-bold w-16 h-16 md:w-20 md:h-20 rounded-full  flex items-center justify-center text-4xl "> {requestedInterventions.length} </div>
+                        <div className="badge badge-neutral text-white font-bold w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-4xl"> {requestedInterventions.length} </div>
                         <div className="card-body items-center text-center">
                             <h2 className="card-title">Demandes d'intervention</h2>                        
                         </div>
@@ -163,7 +169,7 @@ const TestHomePage = () => {
                         <figure className="px-10 pt-10">
                             <Icon path={mdiProgressWrench} size={4} className="md:size-6" />
                         </figure>
-                        <div className="badge badge-error font-bold w-16 h-16 md:w-20 md:h-20 rounded-full  flex items-center justify-center text-4xl ">{inProgressInterventions.length} </div>
+                        <div className="badge badge-neutral text-white font-bold w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-4xl">{inProgressInterventions.length} </div>
                         <div className="card-body items-center text-center">
                             <h2 className="card-title">Interventions en cours</h2>                        
                         </div>
@@ -176,9 +182,19 @@ const TestHomePage = () => {
                         <figure className="px-10 pt-10">
                         <Icon path={mdiCalendarClock} size={4} className="md:size-6" />
                         </figure>
-                        <div className="badge badge-error font-bold w-16 h-16 md:w-20 md:h-20 rounded-full  flex items-center justify-center text-4xl "> {preventivesInterventions.length} </div>
+                        <div className="flex items-center gap-2">
+                            <div className="badge badge-neutral text-white font-bold w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-4xl"> {preventivesInterventions.length} </div>
+                            {overduePreventives.length > 0 && (
+                                <div className="badge badge-error text-white font-bold w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-2xl" title="En retard">
+                                    {overduePreventives.length}
+                                </div>
+                            )}
+                        </div>
                         <div className="card-body items-center text-center">
-                            <h2 className="card-title">Interventions préventives</h2>                        
+                            <h2 className="card-title">Interventions préventives</h2>
+                            {overduePreventives.length > 0 && (
+                                <p className="text-error text-xs font-semibold">{overduePreventives.length} en retard</p>
+                            )}
                         </div>
                     </div>
                     </Link>
