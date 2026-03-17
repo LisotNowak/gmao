@@ -21,6 +21,7 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       DATABASE_URL: postgresql://${EXTERNAL_DB_USER}:${EXTERNAL_DB_PASSWORD}@${EXTERNAL_DB_HOST}:${EXTERNAL_DB_PORT:-5432}/${EXTERNAL_DB_NAME}
       RESET_DATABASE: ${RESET_DATABASE:-false}
+    restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     networks:
@@ -34,6 +35,7 @@ services:
       args:
         VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: gmao-frontend
+    restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-5173}:80"
     depends_on:
