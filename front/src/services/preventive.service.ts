@@ -4,13 +4,15 @@ import api from "../utils/axios";
 const preventiveService = {
 
     // Créer un préventif avec id dans le body
-    async createPreventiveWithoutId(preventive: IPreventiveFormData) { 
+    async createPreventiveWithoutId(preventive: IPreventiveFormData) {
         const payload = {
             title: preventive.title,
             description: preventive.description,
             date: preventive.date,
             serviceId: preventive.serviceId,
             materialId: preventive.materialId,
+            is_recurring: preventive.is_recurring,
+            recurrence_days: preventive.is_recurring ? preventive.recurrence_days : null,
         };
         const preventiveResponse = await api.post("/preventives/material", payload)
         return preventiveResponse.data as IPreventive

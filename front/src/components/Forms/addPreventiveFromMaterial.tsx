@@ -88,10 +88,12 @@ useEffect(() => {
 
   const [form, setForm] = useState<IPreventiveFormData>({
     title: "",
-    description: "",    
-    date:null,
+    description: "",
+    date: null,
     serviceId: null,
     materialId: selectedMaterial ?? null,
+    is_recurring: false,
+    recurrence_days: null,
   });
 
   const selectedMaterialData = useMaterialById(form.materialId);
@@ -101,11 +103,23 @@ useEffect(() => {
   if (!show) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     if (name === "date") {
       setForm(prev => ({
         ...prev,
         date: value ? new Date(value) : null,
+      }));
+    } else if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setForm(prev => ({
+        ...prev,
+        [name]: checked,
+        ...(name === "is_recurring" && !checked ? { recurrence_days: null } : {}),
+      }));
+    } else if (name === "recurrence_days") {
+      setForm(prev => ({
+        ...prev,
+        recurrence_days: value ? Number(value) : null,
       }));
     } else {
       setForm(prev => ({
@@ -135,13 +149,15 @@ const handleSubmit =async (e: React.FormEvent) => {
     createPreventive(
       { ...form, serviceId, date: dateToSend },
       {
-        onSuccess: () => {          
+        onSuccess: () => {
           setForm({
             title: "",
             description: "",
-            date: null ,
+            date: null,
             materialId: 0,
-            serviceId: serviceId
+            serviceId: serviceId,
+            is_recurring: false,
+            recurrence_days: null,
           });
           addToast("Préventif créée avec succès", "success");          
           setTimeout(() => {
@@ -233,10 +249,40 @@ const handleSubmit =async (e: React.FormEvent) => {
                       name="date"
                       value={formatDateForInput(form.date)}
                       onChange={handleChange}
-                      required        
+                      required
                       className="w-full p-1 border [color-scheme:light] border-gray-600 rounded"
                     />
                   </div>
+
+                  <div className="mt-2">
+                    <label className="flex items-center gap-2 font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="is_recurring"
+                        checked={form.is_recurring}
+                        onChange={handleChange}
+                        className="checkbox checkbox-success"
+                      />
+                      Entretien récurrent
+                    </label>
+                  </div>
+
+                  {form.is_recurring && (
+                    <div className="mt-2">
+                      <label htmlFor="recurrence_days" className="font-medium">Période de récurrence (jours)</label>
+                      <input
+                        type="number"
+                        id="recurrence_days"
+                        name="recurrence_days"
+                        min={1}
+                        value={form.recurrence_days ?? ""}
+                        onChange={handleChange}
+                        required
+                        placeholder="ex: 30 pour mensuel"
+                        className="w-full p-1 border border-gray-600 rounded"
+                      />
+                    </div>
+                  )}
                 </div>
 
     {/* Boutons d'action sur la ligne entière */}

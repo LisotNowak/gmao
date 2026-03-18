@@ -76,10 +76,12 @@ const formatDateForInput = (date: Date | null): string => {
 
 const [form, setForm] = useState<IPreventiveFormData>({
   title: "",
-  description: "",    
-  date:null,
+  description: "",
+  date: null,
   serviceId: null,
   materialId: 0,
+  is_recurring: false,
+  recurrence_days: null,
 });
 
 const { mutate: createPreventive } = useCreatePreventive(); 
@@ -87,11 +89,23 @@ const { mutate: createPreventive } = useCreatePreventive();
 if (!show) return null;
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  const { name, value } = e.target;
+  const { name, value, type } = e.target;
   if (name === "date") {
     setForm(prev => ({
       ...prev,
       date: value ? new Date(value) : null,
+    }));
+  } else if (type === "checkbox") {
+    const checked = (e.target as HTMLInputElement).checked;
+    setForm(prev => ({
+      ...prev,
+      [name]: checked,
+      ...(name === "is_recurring" && !checked ? { recurrence_days: null } : {}),
+    }));
+  } else if (name === "recurrence_days") {
+    setForm(prev => ({
+      ...prev,
+      recurrence_days: value ? Number(value) : null,
     }));
   } else {
     setForm(prev => ({
@@ -121,13 +135,15 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
     createPreventive(
       { ...form, serviceId, date: dateToSend },
       {
-        onSuccess: () => {          
+        onSuccess: () => {
           setForm({
             title: "",
             description: "",
-            date: null ,
+            date: null,
             materialId: 0,
-            serviceId: serviceId
+            serviceId: serviceId,
+            is_recurring: false,
+            recurrence_days: null,
           });
           addToast("Préventif créée avec succès", "success");          
           setTimeout(() => {
@@ -189,10 +205,40 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
                 name="date"
                 value={formatDateForInput(form.date)}
                 onChange={handleChange}
-                required        
+                required
                 className="w-full p-1 border [color-scheme:light] border-gray-400 rounded focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400"
               />
             </div>
+
+            <div className="mt-2">
+              <label className="flex items-center gap-2 font-medium cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="is_recurring"
+                  checked={form.is_recurring}
+                  onChange={handleChange}
+                  className="checkbox checkbox-success"
+                />
+                Entretien récurrent
+              </label>
+            </div>
+
+            {form.is_recurring && (
+              <div className="mt-2">
+                <label htmlFor="recurrence_days" className="font-medium">Période de récurrence (jours)</label>
+                <input
+                  type="number"
+                  id="recurrence_days"
+                  name="recurrence_days"
+                  min={1}
+                  value={form.recurrence_days ?? ""}
+                  onChange={handleChange}
+                  required
+                  placeholder="ex: 30 pour mensuel"
+                  className="w-full p-1 border border-gray-400 rounded focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+            )}
     
      {/* <div>
       <label htmlFor="categoryId" className="block mb-1 font-medium">Catégorie</label>

@@ -4,7 +4,7 @@ export type IPreventive = {
     id: number,
     title : string,
     description: string,
-    process: string,    
+    process: string,
     date: Date;
     serviceId: number | null
     materialLinks: {
@@ -19,7 +19,9 @@ export type IPreventive = {
         };
     }[];
     statusId: number,
-    created_at: string 
+    is_recurring: boolean,
+    recurrence_days: number | null,
+    created_at: string
     updated_at: string
 };
 
@@ -52,8 +54,10 @@ export type IUpdateStatusPreventive = {
 
 export type IPreventiveFormData = {
     title : string,
-    description: string,    
+    description: string,
     date: Date | null;
     serviceId: number | null
-    materialId: number | null,      
+    materialId: number | null,
+    is_recurring: boolean,
+    recurrence_days: number | null,
 };

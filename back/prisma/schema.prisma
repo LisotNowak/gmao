@@ -180,19 +180,21 @@ model Movement {
 }
 
 model Preventive {
-  id            Int                  @id @default(autoincrement())
-  title         String?
-  description   String?
-  process       String?
-  date          DateTime?
-  serviceId     Int?
-  statusId      Int                  @default(1)
-  created_at    DateTime?            @default(now())
-  updated_at    DateTime?            @default(now())
-  materialLinks MaterialPreventive[]
-  service       Service?             @relation(fields: [serviceId], references: [id])
-  status        Status?               @relation(fields: [statusId], references: [id])
-  users         UserPreventive[]
+  id              Int                  @id @default(autoincrement())
+  title           String?
+  description     String?
+  process         String?
+  date            DateTime?
+  serviceId       Int?
+  statusId        Int                  @default(1)
+  is_recurring    Boolean              @default(false)
+  recurrence_days Int?
+  created_at      DateTime?            @default(now())
+  updated_at      DateTime?            @default(now())
+  materialLinks   MaterialPreventive[]
+  service         Service?             @relation(fields: [serviceId], references: [id])
+  status          Status?              @relation(fields: [statusId], references: [id])
+  users           UserPreventive[]
 }
 
 model MaterialPreventive {

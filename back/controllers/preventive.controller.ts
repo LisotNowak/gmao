@@ -145,7 +145,7 @@ export const updateStatusPreventive = async (
 
     // Supprime l'id du body pour éviter les conflits
     const { id:  _, statusId, validationCode: _validationCode, ...updateData } = req.body;
-    
+
     const preventiveToUpdate = await prisma.preventive.update({
        where: { id },
       data: {
@@ -155,8 +155,42 @@ export const updateStatusPreventive = async (
         },
         updated_at: new Date(),
       },
+      include: {
+        materialLinks: true,
+      },
     });
-   
+
+    // Si clôture (statusId=3) et préventif récurrent → créer le suivant
+    if (statusId === 3 && preventiveSelected.is_recurring && preventiveSelected.recurrence_days) {
+      const closingDate = new Date();
+      const nextDate = new Date(closingDate);
+      nextDate.setDate(nextDate.getDate() + preventiveSelected.recurrence_days);
+
+      const newPreventive = await prisma.preventive.create({
+        data: {
+          title: preventiveSelected.title,
+          description: preventiveSelected.description,
+          process: preventiveSelected.process,
+          date: nextDate,
+          serviceId: preventiveSelected.serviceId,
+          is_recurring: true,
+          recurrence_days: preventiveSelected.recurrence_days,
+          statusId: 1,
+        },
+      });
+
+      // Recréer les liens matériels
+      const materialLinks = (preventiveToUpdate as any).materialLinks as { materialId: number }[];
+      for (const link of materialLinks) {
+        await prisma.materialPreventive.create({
+          data: {
+            preventiveId: newPreventive.id,
+            materialId: link.materialId,
+          },
+        });
+      }
+    }
+
     res.status(200).json({
       message: `${preventiveToUpdate.title} mis à jour avec succès`,
       preventive: preventiveToUpdate,

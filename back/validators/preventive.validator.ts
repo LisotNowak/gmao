@@ -10,4 +10,6 @@ export const preventiveSchema = Joi.object({
   serviceId: Joi.number().integer().allow(null),
   materialId: Joi.number().integer().allow(null),
   validationCode: Joi.number().integer().allow(null),
+  is_recurring: Joi.boolean().allow(null),
+  recurrence_days: Joi.number().integer().min(1).allow(null),
 })

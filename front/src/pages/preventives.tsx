@@ -1,4 +1,4 @@
-import { mdiCalendarMonth, mdiCheckAll, mdiCheckCircleOutline, mdiPencil, mdiTools, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarMonth, mdiCheckAll, mdiCheckCircleOutline, mdiPencil, mdiSync, mdiTools, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -283,10 +283,17 @@ const InterventionsPreventives = () => {
                     {filteredPreventives?.map((preventive) => (
                     <div
                         key={preventive.id}
-                        className="bg-gray-100 border-4 border-gray-500 w-3/4 mx-auto my-2 rounded shadow hover:bg-gray-400 transition-colors"
+                        className={`border-4 w-3/4 mx-auto my-2 rounded shadow transition-colors ${preventive.is_recurring ? 'bg-blue-50 border-blue-400 hover:bg-blue-100' : 'bg-gray-100 border-gray-500 hover:bg-gray-400'}`}
                     >
                         {/* Boutons modifier / supprimer alignés à droite */}
-                        <div className="flex justify-end gap-2 p-2">
+                        <div className="flex justify-between items-center gap-2 p-2">
+                        {preventive.is_recurring && (
+                            <span className="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-semibold">
+                                <Icon path={mdiSync} size={0.7} />
+                                Récurrent · tous les {preventive.recurrence_days}j
+                            </span>
+                        )}
+                        {!preventive.is_recurring && <span />}
                             {preventive.statusId === 3 ? (                                
                                 <span className="px-3 py-1 bg-gray-600 text-white rounded flex items-center gap-1">
                                 <Icon path={mdiCheckAll} size={1.2} />
