@@ -212,17 +212,17 @@ const InterventionsInProgress = () => {
                              {/* Matériel */}
                              <div className="text-left">
                                <p className="font-semibold text-gray-600 text-center">Matériel concerné</p>
-                               <p className=" p-2 bg-gray-200 rounded text-center">{intervention.materials
-                                 .map((m) => m.material?.name)
-                                 .filter(Boolean)
-                                 .join(", ")}
-                                 </p>
+                               <p className="p-2 bg-gray-200 rounded text-center">
+                                 {intervention.materials.map((m) => m.material?.name).filter(Boolean).join(", ") || intervention.material_text || '—'}
+                               </p>
                              </div>
-                   
+
                              {/* Type */}
                              <div className="text-left">
-                               <p className="font-semibold text-gray-600 text-center">Type d'intervention </p>
-                               <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label ?? '—'}</p>
+                               <p className="font-semibold text-gray-600 text-center">Type d'intervention</p>
+                               <p className="p-2 bg-gray-200 rounded text-center">
+                                 {intervention.type?.label ?? intervention.type_text ?? '—'}
+                               </p>
                              </div>
                              {/* Date */}
                              <div className="text-left ">

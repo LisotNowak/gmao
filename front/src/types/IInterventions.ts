@@ -26,7 +26,10 @@ export type IIntervention = {
     label: string
   } | null
   requestor_firstname: string,
-  requestor_lastname: string ,
+  requestor_lastname: string,
+  localisation_text?: string | null,
+  type_text?: string | null,
+  material_text?: string | null,
   materials: {
     id: number;
     materialId: number;
@@ -42,17 +45,20 @@ export type IIntervention = {
 
 export type IInterventionFormData = {
     title : string,
-    description: string,    
-    categoryId: number | null,  
-    typeId:number | null,  
-    localisationId: number | null, 
-    priorityId: number | null,     
-  picture: string, 
+    description: string,
+    categoryId: number | null,
+    typeId:number | null,
+    localisationId: number | null,
+    priorityId: number | null,
+  picture: string,
   mimetype?: string | null,
-    serviceId: number | null, 
-    materialId: number | null, 
+    serviceId: number | null,
+    materialId: number | null,
     requestor_firstname: string,
-    requestor_lastname: string    
+    requestor_lastname: string,
+    localisation_text?: string | null,
+    type_text?: string | null,
+    material_text?: string | null,
 }
 
 export type IInterventionHistory = {   

@@ -16,6 +16,9 @@ export const interventionSchema = Joi.object({
   categoryId: Joi.number().integer().allow(null),
   priorityId: Joi.number().integer().allow(null),
   typeId: Joi.number().integer().allow(null),
-  requestor_firstname: Joi.string().allow(null, ''), 
-  requestor_lastname: Joi.string().allow(null, ''), 
+  requestor_firstname: Joi.string().allow(null, ''),
+  requestor_lastname: Joi.string().allow(null, ''),
+  localisation_text: Joi.string().allow(null, ''),
+  type_text: Joi.string().allow(null, ''),
+  material_text: Joi.string().allow(null, ''),
 });

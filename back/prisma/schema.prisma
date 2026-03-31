@@ -108,6 +108,9 @@ model Intervention {
   updated_at          DateTime?              @default(now())
   requestor_firstname String?
   requestor_lastname  String?
+  localisation_text   String?
+  type_text           String?
+  material_text       String?
   category            Category?              @relation(fields: [categoryId], references: [id])
   localisation        Localisation?          @relation(fields: [localisationId], references: [id])
   priority            Priority?              @relation(fields: [priorityId], references: [id])

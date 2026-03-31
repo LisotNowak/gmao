@@ -294,17 +294,17 @@ useEffect(() => {
                       {/* Matériel */}
                       <div className="text-left">
                         <p className="font-semibold text-gray-600 text-center">Matériel concerné :</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.materials
-                          .map((m) => m.material?.name)
-                          .filter(Boolean)
-                          .join(", ")}
-                          </p>
+                        <p className="p-2 bg-gray-200 rounded text-center">
+                          {intervention.materials.map((m) => m.material?.name).filter(Boolean).join(", ") || intervention.material_text || '—'}
+                        </p>
                       </div>
 
                       {/* Type */}
                       <div className="text-left">
                         <p className="font-semibold text-gray-600 text-center">Type d'intervention :</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label ?? '—'}</p>
+                        <p className="p-2 bg-gray-200 rounded text-center">
+                          {intervention.type?.label ?? intervention.type_text ?? '—'}
+                        </p>
                       </div>
                       {/* Date */}
                       <div className="text-left md:text-right">
@@ -325,18 +325,22 @@ useEffect(() => {
 
                       <div className="flex flex-col">
                         <p className="font-semibold text-gray-600 text-center">Localisation</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.localisation?.label}</p>
+                        <p className="p-2 bg-gray-200 rounded text-center">
+                          {intervention.localisation?.label ?? intervention.localisation_text ?? '—'}
+                        </p>
                       </div>
 
                       <div className="flex flex-col">
                         <p className="font-semibold text-gray-600 text-center">Type</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">{intervention.type?.label ?? '—'}</p>
+                        <p className="p-2 bg-gray-200 rounded text-center">
+                          {intervention.type?.label ?? intervention.type_text ?? '—'}
+                        </p>
                       </div>
 
                       <div className="flex flex-col">
                         <p className="font-semibold text-gray-600 text-center">Matériel</p>
-                        <p className=" p-2 bg-gray-200 rounded text-center">
-                          {intervention.materials.map((m) => m.material?.name).filter(Boolean).join(", ")}
+                        <p className="p-2 bg-gray-200 rounded text-center">
+                          {intervention.materials.map((m) => m.material?.name).filter(Boolean).join(", ") || intervention.material_text || '—'}
                         </p>
                       </div>
 

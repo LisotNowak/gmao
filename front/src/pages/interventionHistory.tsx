@@ -240,7 +240,7 @@ const InterventionHistory = () => {
                   <div>
                     <p className="font-semibold text-gray-600 text-xs text-center">Type</p>
                     <p className="p-1 bg-gray-200 rounded text-center text-sm">
-                      {intervention.type?.label ?? '—'}
+                      {intervention.type?.label ?? intervention.type_text ?? '—'}
                     </p>
                   </div>
 
@@ -272,17 +272,14 @@ const InterventionHistory = () => {
                   <div>
                     <p className="font-semibold text-gray-600 text-center">Localisation</p>
                     <p className="p-2 bg-gray-200 rounded text-center">
-                      {intervention.localisation?.label ?? '—'}
+                      {intervention.localisation?.label ?? intervention.localisation_text ?? '—'}
                     </p>
                   </div>
 
                   <div>
                     <p className="font-semibold text-gray-600 text-center">Matériel concerné</p>
                     <p className="p-2 bg-gray-200 rounded text-center">
-                      {intervention.materials
-                        .map((m) => m.material?.name)
-                        .filter(Boolean)
-                        .join(', ') || '—'}
+                      {intervention.materials.map((m) => m.material?.name).filter(Boolean).join(', ') || intervention.material_text || '—'}
                     </p>
                   </div>
 
