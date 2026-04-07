@@ -5,9 +5,23 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [ tailwindcss(),react(),
+  plugins: [
+    tailwindcss(),
+    react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // En dev, activer le SW pour pouvoir tester le mode offline
+      devOptions: {
+        enabled: true,
+      },
+      // Utilise notre service-worker.js personnalisé
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'service-worker.js',
+      injectManifest: {
+        // Pas de precache Workbox — notre SW gère tout en natif
+        injectionPoint: undefined,
+      },
       manifest: {
         name: "GMAO",
         short_name: "GMAO",

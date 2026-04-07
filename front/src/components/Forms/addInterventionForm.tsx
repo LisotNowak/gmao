@@ -156,12 +156,16 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
         createIntervention(
           { ...form, serviceId },
           {
-            onSuccess: () => {
+            onSuccess: (result) => {
               setForm(emptyForm);
               setFreeTextType(false);
               setFreeTextLocalisation(false);
               setFreeTextMaterial(false);
-              addToast("Intervention créée avec succès", "success");
+              if ('queued' in result && result.queued) {
+                addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+              } else {
+                addToast("Intervention créée avec succès", "success");
+              }
               setTimeout(() => { onClose(); }, 1000);
             },
             onError: (err) => {

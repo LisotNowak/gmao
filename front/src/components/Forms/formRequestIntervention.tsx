@@ -131,7 +131,7 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
       createIntervention(
         { ...form },
         {
-          onSuccess: () => {
+          onSuccess: (result) => {
             setForm({
               ...emptyForm,
               localisationId: form.localisationId,
@@ -140,7 +140,11 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
             });
             setFreeTextType(false);
             setFreeTextMaterial(false);
-            addToast("Demande d'intervention créée avec succès", "success");
+            if ('queued' in result && result.queued) {
+              addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+            } else {
+              addToast("Demande d'intervention créée avec succès", "success");
+            }
             setTimeout(() => { onClose(); }, 1000);
           },
           onError: (err) => {

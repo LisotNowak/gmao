@@ -2,22 +2,31 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import interventionService from "../services/intervention.service";
 import materialService from "../services/material.service";
-import type { IIntervention, IInterventionHistory } from "../types/IInterventions";
+import type { IIntervention, IInterventionFormData, IInterventionHistory } from "../types/IInterventions";
 import type {  IUpdateMaterial } from "../types/Imaterial";
+import { offlineQueue } from "../utils/offlineQueue";
 
 const interventionKeys = {
   all: ["interventions"] as const,
 };
-// Création d'intervention
+
+// Création d'intervention (avec gestion offline)
 export function useCreateIntervention() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: interventionService.createInterventionWithoutId,
-    onSuccess: () => {       
+    mutationFn: async (data: IInterventionFormData): Promise<{ queued: true } | Awaited<ReturnType<typeof interventionService.createInterventionWithoutId>>> => {
+      if (!navigator.onLine) {
+        offlineQueue.add('createIntervention', data);
+        return { queued: true };
+      }
+      return interventionService.createInterventionWithoutId(data);
+    },
+    onSuccess: (result) => {
+      if ('queued' in result && result.queued) return; // sera synchronisé au retour en ligne
       queryClient.invalidateQueries({ queryKey: interventionKeys.all });
     },
-  });  
+  });
 }
 
 // Récupérer toutes les interventions

@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router";
+import OfflineBanner from "./components/Utils/OfflineBanner";
 import Login from "./components/Forms/logInForm";
 import RequireAuth from "./components/Utils/requireAuth";
 import AdminPage from "./pages/admin";
@@ -19,7 +20,11 @@ import TestHomePage from "./pages/testHomePage";
 import InterventionHistory from "./pages/interventionHistory";
 
 export default function Router(){
-    return (        
+    return (
+        <>
+        <OfflineBanner />
+        {/* Espace réservé pour la barre fixe (hauteur variable selon expansion) */}
+        <div className="pt-9" />
         <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/accueil/:serviceLabel" element={<TestHomePage />} />
@@ -39,6 +44,7 @@ export default function Router(){
             <Route path="/admin" element={<RequireAuth>  <AdminPage /> </RequireAuth>} />
             <Route path="/admin/login" element={<Login />} />
         </Routes>
+        </>
     )
 };
 

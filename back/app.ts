@@ -91,6 +91,10 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // --- Swagger ---
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
+// --- Health check (utilisé par le frontend pour détecter la connexion) ---
+app.head("/api/health", (_req: Request, res: Response) => { res.sendStatus(200); });
+app.get("/api/health",  (_req: Request, res: Response) => { res.sendStatus(200); });
+
 // --- Routes API ---
 app.use("/api", routes);
 
