@@ -24,8 +24,8 @@ FROM nginx:alpine
 # Copier le build du frontend
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copier la config nginx (depuis la racine du projet)
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Copier le template nginx (traité via envsubst au démarrage)
+COPY ./nginx/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Exposer le port 80
 EXPOSE 80

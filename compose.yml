@@ -16,7 +16,7 @@ services:
         POSTGRES_DB: gmao
     env_file:
       - ./back/.env
-    container_name: gmao-backend    
+    container_name: ${APP_PREFIX:-gmao}-backend
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       DATABASE_URL: postgresql://${EXTERNAL_DB_USER}:${EXTERNAL_DB_PASSWORD}@${EXTERNAL_DB_HOST}:${EXTERNAL_DB_PORT:-5432}/${EXTERNAL_DB_NAME}
@@ -34,10 +34,12 @@ services:
       dockerfile: ./front/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-/api}
-    container_name: gmao-frontend
+    container_name: ${APP_PREFIX:-gmao}-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-5173}:80"
+    environment:
+      BACKEND_HOST: ${APP_PREFIX:-gmao}-backend
     depends_on:
       - backend
     networks:
