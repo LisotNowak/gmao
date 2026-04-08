@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "prod:start": "docker compose -f compose.yml --env-file .env.prod up -d --build",
+    "prod:stop": "docker compose -f compose.yml --env-file .env.prod down",
+    "preprod:start": "docker compose -f compose.yml --env-file .env.preprod up -d --build",
+    "preprod:stop": "docker compose -f compose.yml --env-file .env.preprod down"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.0.6",
     "vite-plugin-pwa": "^1.0.3"
