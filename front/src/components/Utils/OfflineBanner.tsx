@@ -3,8 +3,30 @@ import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { offlineQueue, type QueuedMutation } from '../../utils/offlineQueue';
 
 const TYPE_LABELS: Record<QueuedMutation['type'], string> = {
-  createIntervention: "Création d'intervention",
+  createIntervention:       "Creation d'intervention",
+  updateIntervention:       "Modification d'intervention",
+  updateInterventionStatus: "Validation d'intervention",
+  deleteIntervention:       "Suppression d'intervention",
+  finalizationIntervention: "Cloture d'intervention",
+  addUsertoIntervention:    "Assignation a une intervention",
 };
+
+function getPayloadSummary(item: QueuedMutation): string {
+  switch (item.type) {
+    case "createIntervention":
+      return item.payload.title ?? "";
+    case "updateIntervention":
+      return item.payload.data.title ?? `#${item.payload.id}`;
+    case "updateInterventionStatus":
+    case "deleteIntervention":
+    case "finalizationIntervention":
+      return `#${item.payload.id}`;
+    case "addUsertoIntervention":
+      return `intervention #${item.payload.interventionId}`;
+    default:
+      return "";
+  }
+}
 
 export default function OfflineBanner() {
   const isOnline = useNetworkStatus();
@@ -66,8 +88,8 @@ export default function OfflineBanner() {
                 <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-orange-300 flex-shrink-0" />
                 <div>
                   <span className="font-semibold">{TYPE_LABELS[item.type]}</span>
-                  {item.payload.title && (
-                    <span className="ml-1 opacity-80">— {item.payload.title}</span>
+                  {getPayloadSummary(item) && (
+                    <span className="ml-1 opacity-80">— {getPayloadSummary(item)}</span>
                   )}
                   <div className="opacity-60 mt-0.5">
                     {new Date(item.timestamp).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
