@@ -156,10 +156,11 @@ useEffect(() => {
             requestor_firstname: "",
             requestor_lastname: "",
           });
-          if ('queued' in result && result.queued) {
-            addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+          const isQueued = typeof result === "object" && result !== null && !Array.isArray(result) && (result as Record<string, unknown>).queued === true;
+          if (isQueued) {
+            addToast("Demande enregistree - sera envoyee a la reconnexion", "info");
           } else {
-            addToast("Intervention créée avec succès", "success");
+            addToast("Intervention creee avec succes", "success");
           }
           setTimeout(() => {
             onClose();

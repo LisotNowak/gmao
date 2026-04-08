@@ -175,6 +175,9 @@ useEffect(() => {
     refetch();
   };
 
+  const isQueued = (r: unknown): boolean =>
+    typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
+
   const handleValidationSubmit = (code: number) => {
     if (!selectedInterventionId) return;
 
@@ -182,10 +185,10 @@ useEffect(() => {
       { id: selectedInterventionId, statusId: 2, validationCode: code },
       {
         onSuccess: (result) => {
-          if ('queued' in result && result.queued) {
-            addToast("Validation enregistrée — sera envoyée à la reconnexion", "info");
+          if (isQueued(result)) {
+            addToast("Validation enregistree - sera envoyee a la reconnexion", "info");
           } else {
-            addToast("Intervention validée !", "success");
+            addToast("Intervention validee !", "success");
             refetch();
           }
           setShowValidateForm(false);
@@ -200,15 +203,15 @@ useEffect(() => {
   };
 
   const handleDelete = (interventionId: number) => {
-    const confirmed = confirm("Êtes-vous sûr de vouloir supprimer cette intervention ?");
+    const confirmed = confirm("Etes-vous sur de vouloir supprimer cette intervention ?");
     if (!confirmed) return;
 
     deleteIntervention(interventionId, {
       onSuccess: (result) => {
-        if ('queued' in result && result.queued) {
-          addToast("Suppression enregistrée — sera envoyée à la reconnexion", "info");
+        if (isQueued(result)) {
+          addToast("Suppression enregistree - sera envoyee a la reconnexion", "info");
         } else {
-          addToast("Intervention supprimée avec succès !", "success");
+          addToast("Intervention supprimee avec succes !", "success");
           refetch();
         }
       },

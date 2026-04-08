@@ -59,18 +59,22 @@ const InterventionsInProgress = () => {
       setShowJoinForm(true);
     };
 
+    const isQueued = (r: unknown): boolean =>
+      typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
+
     const handleJoinSubmit = (validationCode: number) => {
       if (!interventionToJoin) return;
+      const joinId = interventionToJoin;
 
       addUserToIntervention(
-        { interventionId: interventionToJoin, validationCode },
+        { interventionId: joinId, validationCode },
         {
           onSuccess: (result) => {
-            if (‘queued’ in result && result.queued) {
-              addToast("Assignation enregistrée — sera envoyée à la reconnexion", "info");
+            if (isQueued(result)) {
+              addToast("Assignation enregistree - sera envoyee a la reconnexion", "info");
             } else {
-              addToast("Utilisateur ajouté à l’intervention", "success");
-              setRefreshUserList((prev) => [...prev, interventionToJoin!]);
+              addToast("Utilisateur ajoute a l’intervention", "success");
+              setRefreshUserList((prev) => [...prev, joinId]);
               refetch();
             }
           },
@@ -89,17 +93,17 @@ const InterventionsInProgress = () => {
         { id: selectedInterventionId, final_comment: comment, validation_code },
         {
           onSuccess: (result) => {
-            if (‘queued’ in result && result.queued) {
-              addToast("Clôture enregistrée — sera envoyée à la reconnexion", "info");
+            if (isQueued(result)) {
+              addToast("Cloture enregistree - sera envoyee a la reconnexion", "info");
             } else {
-              addToast("Intervention clôturée avec succès", "success");
+              addToast("Intervention cloturee avec succes", "success");
               refetch();
             }
             setShowCommentForm(false);
           },
           onError: (error) => {
             console.error("Erreur lors de la finalisation :", error);
-            addToast("Erreur lors de la clôture avec commentaire", "error");
+            addToast("Erreur lors de la cloture avec commentaire", "error");
           },
         }
       );

@@ -140,10 +140,11 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
             });
             setFreeTextType(false);
             setFreeTextMaterial(false);
-            if ('queued' in result && result.queued) {
-              addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+            const isQueued = typeof result === "object" && result !== null && !Array.isArray(result) && (result as Record<string, unknown>).queued === true;
+            if (isQueued) {
+              addToast("Demande enregistree - sera envoyee a la reconnexion", "info");
             } else {
-              addToast("Demande d'intervention créée avec succès", "success");
+              addToast("Demande d'intervention creee avec succes", "success");
             }
             setTimeout(() => { onClose(); }, 1000);
           },

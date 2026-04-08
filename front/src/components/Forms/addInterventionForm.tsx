@@ -143,14 +143,17 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
           addToast("Code de validation invalide", "error");
           return;
         }
+        const isQueued = (r: unknown): boolean =>
+          typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
+
         updateIntervention(
           { id: interventionId, data: { ...form, serviceId }, validation_code: numericCode },
           {
             onSuccess: (result) => {
-              if ('queued' in result && result.queued) {
-                addToast("Modification enregistrée — sera envoyée à la reconnexion", "info");
+              if (isQueued(result)) {
+                addToast("Modification enregistree - sera envoyee a la reconnexion", "info");
               } else {
-                addToast("Intervention modifiée avec succès", "success");
+                addToast("Intervention modifiee avec succes", "success");
                 if (onSuccess) onSuccess();
               }
               setValidationCode("");
@@ -163,6 +166,9 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
           }
         );
       } else {
+        const isQueued = (r: unknown): boolean =>
+          typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
+
         createIntervention(
           { ...form, serviceId },
           {
@@ -171,16 +177,16 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
               setFreeTextType(false);
               setFreeTextLocalisation(false);
               setFreeTextMaterial(false);
-              if ('queued' in result && result.queued) {
-                addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+              if (isQueued(result)) {
+                addToast("Demande enregistree - sera envoyee a la reconnexion", "info");
               } else {
-                addToast("Intervention créée avec succès", "success");
+                addToast("Intervention creee avec succes", "success");
               }
               setTimeout(() => { onClose(); }, 1000);
             },
             onError: (err) => {
-              console.error("Erreur création intervention", err);
-              addToast("Erreur lors de la création de l'intervention", "error");
+              console.error("Erreur creation intervention", err);
+              addToast("Erreur lors de la creation de l'intervention", "error");
             },
           }
         );
