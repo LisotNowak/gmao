@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 import interventionService from '../services/intervention.service';
+import userService from '../services/user.service';
 import { serverReachableAtom } from '../stores/networkAtom';
 import { offlineQueue } from '../utils/offlineQueue';
 
@@ -11,12 +12,11 @@ export function useOfflineSync() {
   const wasOffline = useRef(false);
 
   useEffect(() => {
-    // Marquer comme hors-ligne pour déclencher la sync au retour
     if (!isOnline) {
       wasOffline.current = true;
       return;
     }
-    // Déclencher la sync si on revient en ligne (ou au premier connect si queue non vide)
+    // Déclencher la sync si retour en ligne OU au démarrage si queue non vide
     if (!wasOffline.current && offlineQueue.count() === 0) return;
     wasOffline.current = false;
 
@@ -29,15 +29,32 @@ export function useOfflineSync() {
       let syncedCount = 0;
       for (const item of pending) {
         try {
-          if (item.type === 'createIntervention') {
-            await interventionService.createInterventionWithoutId(item.payload);
-            offlineQueue.remove(item.id);
-            syncedCount++;
-            console.log(`[OfflineSync] Intervention ${item.id} synchronisée`);
+          switch (item.type) {
+            case 'createIntervention':
+              await interventionService.createInterventionWithoutId(item.payload);
+              break;
+            case 'updateIntervention':
+              await interventionService.updateIntervention(item.payload.id, item.payload.data, item.payload.validation_code);
+              break;
+            case 'updateInterventionStatus':
+              await interventionService.updateInterventionStatus(item.payload.id, item.payload.statusId, item.payload.validationCode);
+              break;
+            case 'deleteIntervention':
+              await interventionService.deleteIntervention(item.payload.id);
+              break;
+            case 'finalizationIntervention':
+              await interventionService.finalizationIntervention(item.payload.id, item.payload.final_comment, item.payload.validation_code);
+              break;
+            case 'addUsertoIntervention':
+              await userService.addUsertoIntervention(item.payload.interventionId, item.payload.validationCode);
+              break;
           }
+          offlineQueue.remove(item.id);
+          syncedCount++;
+          console.log(`[OfflineSync] "${item.type}" ${item.id} synchronisé`);
         } catch (error) {
           // On continue avec les items suivants même si l'un échoue
-          console.error(`[OfflineSync] Échec pour ${item.id}`, error);
+          console.error(`[OfflineSync] Échec pour ${item.type} ${item.id}`, error);
         }
       }
 

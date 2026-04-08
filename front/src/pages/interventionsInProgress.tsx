@@ -7,10 +7,8 @@ import FinalCommentForm from '../components/Forms/finalComment';
 import JoinInterventionForm from '../components/Forms/joinInterventionForm';
 import Header from '../components/Layout/header';
 import UsersAssigned from '../components/Utils/userAssigned';
-import { useInterventions } from '../hooks/useInterventions';
+import { useAddUserToIntervention, useFinalizationIntervention, useInterventions } from '../hooks/useInterventions';
 import { useService } from '../hooks/useService';
-import interventionService from '../services/intervention.service';
-import userService from '../services/user.service';
 import type { IIntervention } from '../types/IInterventions';
 import { useSocket } from '../utils/SocketContext';
 
@@ -61,30 +59,50 @@ const InterventionsInProgress = () => {
       setShowJoinForm(true);
     };
 
-    const handleJoinSubmit = async (validationCode: number) => {
+    const handleJoinSubmit = (validationCode: number) => {
       if (!interventionToJoin) return;
-      try {
-        await userService.addUsertoIntervention(interventionToJoin, validationCode);
-        addToast("Utilisateur ajouté à l’intervention", "success");
-        setRefreshUserList((prev) => [...prev, interventionToJoin]);
-        refetch(); 
-      } catch (error) {
-        console.error("Erreur lors de la finalisation :", error);
-        addToast("Erreur lors de l'ajout", "error");
-      }
+
+      addUserToIntervention(
+        { interventionId: interventionToJoin, validationCode },
+        {
+          onSuccess: (result) => {
+            if (‘queued’ in result && result.queued) {
+              addToast("Assignation enregistrée — sera envoyée à la reconnexion", "info");
+            } else {
+              addToast("Utilisateur ajouté à l’intervention", "success");
+              setRefreshUserList((prev) => [...prev, interventionToJoin!]);
+              refetch();
+            }
+          },
+          onError: (error) => {
+            console.error("Erreur lors de l’ajout :", error);
+            addToast("Erreur lors de l’ajout", "error");
+          },
+        }
+      );
     };
 
-    const handleFinalCommentSubmit = async (comment: string, validation_code: number) => {
+    const handleFinalCommentSubmit = (comment: string, validation_code: number) => {
       if (!selectedInterventionId) return;
 
-      try {
-        await interventionService.finalizationIntervention(selectedInterventionId, comment, validation_code);
-        addToast("Intervention clôturée avec succès", "success");
-        refetch();
-      } catch (error) {
-        console.error("Erreur lors de la finalisation :", error);
-        addToast("Erreur lors de la clôture avec commentaire", "error");
-      }
+      finalizeIntervention(
+        { id: selectedInterventionId, final_comment: comment, validation_code },
+        {
+          onSuccess: (result) => {
+            if (‘queued’ in result && result.queued) {
+              addToast("Clôture enregistrée — sera envoyée à la reconnexion", "info");
+            } else {
+              addToast("Intervention clôturée avec succès", "success");
+              refetch();
+            }
+            setShowCommentForm(false);
+          },
+          onError: (error) => {
+            console.error("Erreur lors de la finalisation :", error);
+            addToast("Erreur lors de la clôture avec commentaire", "error");
+          },
+        }
+      );
     };
 
     const [toasts, setToasts] = React.useState<
@@ -94,7 +112,9 @@ const InterventionsInProgress = () => {
     const [filterUrgent, setFilterUrgent] = useState(false);
     const [filterLessUrgent, setFilterLessUrgent] = useState(false);
     const { data, refetch } = useInterventions();
-   
+    const { mutate: finalizeIntervention } = useFinalizationIntervention();
+    const { mutate: addUserToIntervention } = useAddUserToIntervention();
+
     const socket = useSocket();  
     
     const updateDisplayInterventions = useCallback((interventions: IIntervention[]) => {

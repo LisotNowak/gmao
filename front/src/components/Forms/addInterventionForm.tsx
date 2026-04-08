@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useParams } from "react-router-dom";
-import { useCreateIntervention } from "../../hooks/useInterventions";
+import { useCreateIntervention, useUpdateIntervention } from "../../hooks/useInterventions";
 import serviceService from "../../services/services.service";
-import interventionService from "../../services/intervention.service";
 import type { IInterventionFormData } from '../../types/IInterventions';
 import SearchBarLocalisation from "../SearchBars/searchBarLocalisation";
 import SearchBarPriority from '../SearchBars/searchBarPriority';
@@ -101,6 +100,7 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
   }, [initialData]);
 
   const { mutate: createIntervention } = useCreateIntervention();
+  const { mutate: updateIntervention } = useUpdateIntervention();
 
   if (!show) return null;
 
@@ -143,15 +143,25 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
           addToast("Code de validation invalide", "error");
           return;
         }
-        await interventionService.updateIntervention(
-          interventionId,
-          { ...form, serviceId },
-          numericCode
+        updateIntervention(
+          { id: interventionId, data: { ...form, serviceId }, validation_code: numericCode },
+          {
+            onSuccess: (result) => {
+              if ('queued' in result && result.queued) {
+                addToast("Modification enregistrée — sera envoyée à la reconnexion", "info");
+              } else {
+                addToast("Intervention modifiée avec succès", "success");
+                if (onSuccess) onSuccess();
+              }
+              setValidationCode("");
+              setTimeout(() => { onClose(); }, 1000);
+            },
+            onError: (err) => {
+              console.error("Erreur modification intervention", err);
+              addToast("Erreur lors de la modification de l'intervention", "error");
+            },
+          }
         );
-        addToast("Intervention modifiée avec succès", "success");
-        if (onSuccess) onSuccess();
-        setValidationCode("");
-        onClose();
       } else {
         createIntervention(
           { ...form, serviceId },

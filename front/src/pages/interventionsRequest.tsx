@@ -7,9 +7,8 @@ import { useParams } from 'react-router-dom';
 import ValidateInterventionForm from '../components/Confirmation/confirmWithValidationCode';
 import FormInterventionRequest from '../components/Forms/addInterventionForm';
 import Header from '../components/Layout/header';
-import { useInterventions } from '../hooks/useInterventions';
+import { useDeleteIntervention, useInterventions, useUpdateInterventionStatus } from '../hooks/useInterventions';
 import { useService } from '../hooks/useService';
-import interventionService from '../services/intervention.service';
 import type { IIntervention } from '../types/IInterventions';
 import { useSocket } from '../utils/SocketContext';
 
@@ -44,6 +43,8 @@ const InterventionsRequested = () => {
   const { service, isLoading, error } = useService(serviceLabel);
   const [showForm, setShowForm] = useState(false);
   const { data, refetch } = useInterventions();
+  const { mutate: updateStatus } = useUpdateInterventionStatus();
+  const { mutate: deleteIntervention } = useDeleteIntervention();
   const [showValidateForm, setShowValidateForm] = useState(false);
   const [displayInterventions, setDisplayInterventions] = useState<IIntervention[]>([]);
   const [filterUrgent, setFilterUrgent] = useState(false);
@@ -174,34 +175,48 @@ useEffect(() => {
     refetch();
   };
 
-  const handleValidationSubmit = async (code: number) => {
+  const handleValidationSubmit = (code: number) => {
     if (!selectedInterventionId) return;
 
-    try {
-      await interventionService.updateInterventionStatus(selectedInterventionId, 2, code);
-      addToast("Intervention validée !", "success");
-      setShowValidateForm(false); 
-      setSelectedInterventionId(null);
-      refetch();
-    } catch (error) {
-      console.error(error);
-      addToast("Erreur lors de la validation", "error");
-    }
+    updateStatus(
+      { id: selectedInterventionId, statusId: 2, validationCode: code },
+      {
+        onSuccess: (result) => {
+          if ('queued' in result && result.queued) {
+            addToast("Validation enregistrée — sera envoyée à la reconnexion", "info");
+          } else {
+            addToast("Intervention validée !", "success");
+            refetch();
+          }
+          setShowValidateForm(false);
+          setSelectedInterventionId(null);
+        },
+        onError: (error) => {
+          console.error(error);
+          addToast("Erreur lors de la validation", "error");
+        },
+      }
+    );
   };
 
-  const handleDelete = async(interventionId: number)=> {
+  const handleDelete = (interventionId: number) => {
     const confirmed = confirm("Êtes-vous sûr de vouloir supprimer cette intervention ?");
-    if (!confirmed) {    
-      return;
-    }
-    try {
-      await interventionService.deleteIntervention(interventionId);     
-      addToast("Intervention supprimée avec succès !","success");
-      refetch();       
-    } catch (error) {
-      console.error(error);
-      addToast("Erreur lors de la suppression", "error");
-    }
+    if (!confirmed) return;
+
+    deleteIntervention(interventionId, {
+      onSuccess: (result) => {
+        if ('queued' in result && result.queued) {
+          addToast("Suppression enregistrée — sera envoyée à la reconnexion", "info");
+        } else {
+          addToast("Intervention supprimée avec succès !", "success");
+          refetch();
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+        addToast("Erreur lors de la suppression", "error");
+      },
+    });
   };
  
     return (
