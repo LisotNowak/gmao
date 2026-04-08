@@ -131,7 +131,11 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!serviceId) {
+    // En mode édition, le serviceId est déjà dans form.serviceId (vient de initialData)
+    // En mode création, il vient du fetch réseau via serviceLabel
+    const resolvedServiceId = serviceId ?? form.serviceId;
+
+    if (!resolvedServiceId) {
       addToast("Service introuvable !", "error");
       return;
     }
@@ -147,7 +151,7 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
           typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
 
         updateIntervention(
-          { id: interventionId, data: { ...form, serviceId }, validation_code: numericCode },
+          { id: interventionId, data: { ...form, serviceId: resolvedServiceId }, validation_code: numericCode },
           {
             onSuccess: (result) => {
               if (isQueued(result)) {
@@ -170,7 +174,7 @@ export default function FormInterventionRequest ({ show, onClose, initialData, i
           typeof r === "object" && r !== null && !Array.isArray(r) && (r as Record<string, unknown>).queued === true;
 
         createIntervention(
-          { ...form, serviceId },
+          { ...form, serviceId: resolvedServiceId },
           {
             onSuccess: (result) => {
               setForm(emptyForm);
