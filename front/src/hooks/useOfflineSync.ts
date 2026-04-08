@@ -11,12 +11,13 @@ export function useOfflineSync() {
   const wasOffline = useRef(false);
 
   useEffect(() => {
-    // On rejoue la queue uniquement au retour en ligne (pas au premier rendu)
+    // Marquer comme hors-ligne pour déclencher la sync au retour
     if (!isOnline) {
       wasOffline.current = true;
       return;
     }
-    if (!wasOffline.current) return;
+    // Déclencher la sync si on revient en ligne (ou au premier connect si queue non vide)
+    if (!wasOffline.current && offlineQueue.count() === 0) return;
     wasOffline.current = false;
 
     const replayQueue = async () => {
@@ -25,20 +26,24 @@ export function useOfflineSync() {
 
       console.log(`[OfflineSync] ${pending.length} mutation(s) en attente, synchronisation...`);
 
+      let syncedCount = 0;
       for (const item of pending) {
         try {
           if (item.type === 'createIntervention') {
             await interventionService.createInterventionWithoutId(item.payload);
             offlineQueue.remove(item.id);
+            syncedCount++;
             console.log(`[OfflineSync] Intervention ${item.id} synchronisée`);
           }
         } catch (error) {
+          // On continue avec les items suivants même si l'un échoue
           console.error(`[OfflineSync] Échec pour ${item.id}`, error);
-          break;
         }
       }
 
-      queryClient.invalidateQueries({ queryKey: ['interventions'] });
+      if (syncedCount > 0) {
+        queryClient.invalidateQueries({ queryKey: ['interventions'] });
+      }
     };
 
     replayQueue();

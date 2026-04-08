@@ -5,4 +5,4 @@ import { atom } from 'jotai';
  * false = serveur inaccessible
  * Mis à jour en temps réel par SocketContext via getDefaultStore()
  */
-export const serverReachableAtom = atom<boolean>(true);
+export const serverReachableAtom = atom<boolean>(false);

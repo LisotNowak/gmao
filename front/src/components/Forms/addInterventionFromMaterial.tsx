@@ -99,13 +99,32 @@ useEffect(() => {
   }
 }, [selectedMaterial]);
 
-  const { mutate: createIntervention } = useCreateIntervention(); 
+  const { mutate: createIntervention } = useCreateIntervention();
 
   if (!show) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const MAX_SIZE_MB = 7;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      addToast(`Image trop grande (max ${MAX_SIZE_MB} Mo)`, "error");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const parts = result.split(',');
+      const base64 = parts[1] ?? parts[0];
+      setForm((prev) => ({ ...prev, picture: base64, mimetype: file.type }));
+    };
+    reader.readAsDataURL(file);
   };
 
  const handleSubmit =async (e: React.FormEvent) => {
@@ -123,7 +142,7 @@ useEffect(() => {
     createIntervention(
       { ...payload, serviceId },
       {
-        onSuccess: () => {          
+        onSuccess: (result) => {
           setForm({
             title: "",
             description: "",
@@ -135,12 +154,16 @@ useEffect(() => {
             serviceId: null,
             materialId: null,
             requestor_firstname: "",
-            requestor_lastname: "",             
+            requestor_lastname: "",
           });
-          addToast("Intervention créée avec succès", "success");          
+          if ('queued' in result && result.queued) {
+            addToast("Demande enregistrée — sera envoyée à la reconnexion", "info");
+          } else {
+            addToast("Intervention créée avec succès", "success");
+          }
           setTimeout(() => {
-            onClose()
-          }, 1000);          
+            onClose();
+          }, 1000);
         },
         
         onError: (err) => {
@@ -248,7 +271,8 @@ useEffect(() => {
                 id="picture"
                 name="picture"
                 type="file"
-                onChange={handleChange}
+                accept="image/*"
+                onChange={handleFileChange}
                 className="file-input file-input-neutral w-full"
               />
             </div>
