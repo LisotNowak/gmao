@@ -20,8 +20,12 @@ export const offlineQueue = {
 
   add(type: QueuedMutation['type'], payload: IInterventionFormData): string {
     const queue = this.getAll();
+    // crypto.randomUUID() nécessite HTTPS — fallback compatible HTTP
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
     const item: QueuedMutation = {
-      id: crypto.randomUUID(),
+      id,
       type,
       payload,
       timestamp: Date.now(),
