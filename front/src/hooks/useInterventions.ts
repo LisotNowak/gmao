@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import interventionService from "../services/intervention.service";
 import materialService from "../services/material.service";
+import { serverReachableAtom } from "../stores/networkAtom";
 import type { IIntervention, IInterventionFormData, IInterventionHistory } from "../types/IInterventions";
 import type {  IUpdateMaterial } from "../types/Imaterial";
 import { offlineQueue } from "../utils/offlineQueue";
@@ -13,10 +15,11 @@ const interventionKeys = {
 // Création d'intervention (avec gestion offline)
 export function useCreateIntervention() {
   const queryClient = useQueryClient();
+  const isServerReachable = useAtomValue(serverReachableAtom);
 
   return useMutation({
     mutationFn: async (data: IInterventionFormData): Promise<{ queued: true } | Awaited<ReturnType<typeof interventionService.createInterventionWithoutId>>> => {
-      if (!navigator.onLine) {
+      if (!isServerReachable) {
         offlineQueue.add('createIntervention', data);
         return { queued: true };
       }
