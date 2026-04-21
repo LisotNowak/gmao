@@ -66,29 +66,13 @@ const InterventionsPreventives = () => {
     const { data: materialsData, } = useAllMaterials();
     const allMaterials: IMaterial[] = Array.isArray(materialsData) ? materialsData : [];
     const [_materials, setMaterials] = useState<IMaterial[]>([]);
-    const [filterMode, setFilterMode] = useState<'soon' | 'all' | 'in_progress'>('soon');
     const filteredPreventives = selectedMaterial
         ? preventives?.filter(preventive =>
             preventive.materialLinks.some(link => link.material.id === selectedMaterial.id)
             )
         : preventives?.filter(preventive => {
-            const preventiveDate = preventive.date ? new Date(preventive.date) : null;
-            const now = new Date();
-            const twoWeeksFromNow = new Date();
-            twoWeeksFromNow.setDate(now.getDate() + 14);
-
             const isSameService = preventive.materialLinks.some(link => link.material.serviceId === service?.id);
-            if (!preventiveDate || !isSameService) return false;
-
-            if (filterMode === 'soon') {
-                // StatusId 1 = demandé
-                 return preventive.statusId === 1 && (preventiveDate <= twoWeeksFromNow)
-            }else if (filterMode === 'in_progress') {
-            // StatusId 2 = en cours
-            return preventive.statusId === 2;
-            }else {
-                return  preventive.statusId === 1 || preventive.statusId === 2;
-            }
+            return isSameService && (preventive.statusId === 1 || preventive.statusId === 2);
         });
 
     filteredPreventives?.sort((a, b) => {
@@ -270,20 +254,19 @@ const InterventionsPreventives = () => {
 
             <section className='flex flex-col items-center w-full font-bold  gap-2 text-black'>
 
-                 <div className='w-3/4 m-4 flex gap-4 '>
-                    <button type='button'  className={`btn bg-black text-white  hover:text-black hover:bg-white ${filterMode === 'soon' ? 'btn-active' : ''}`}
-                         onClick={() => setFilterMode('soon')}>Prochainement</button>
-                         <button type='button'  className={`btn bg-black text-white  hover:text-black hover:bg-white ${filterMode === 'in_progress' ? 'btn-active' : ''}`}
-                         onClick={() => setFilterMode('in_progress')}>En cours</button>
-                    <button type='button'className={`btn bg-black text-white  hover:text-black hover:bg-white ${filterMode === 'all' ? 'btn-active' : ''}`}
-                        onClick={() => setFilterMode('all')}>Tous</button>
-                    
-                </div>
 
-                    {filteredPreventives?.map((preventive) => (
+                    {filteredPreventives?.map((preventive) => {
+                    const isOverdue = preventive.date && new Date(preventive.date) < new Date();
+                    return (
                     <div
                         key={preventive.id}
-                        className={`border-4 w-3/4 mx-auto my-2 rounded shadow transition-colors ${preventive.is_recurring ? 'bg-blue-50 border-blue-400 hover:bg-blue-100' : 'bg-gray-100 border-gray-500 hover:bg-gray-400'}`}
+                        className={`border-4 w-3/4 mx-auto my-2 rounded shadow transition-colors ${
+                            isOverdue
+                                ? 'bg-red-100 border-red-500 hover:bg-red-200'
+                                : preventive.is_recurring
+                                    ? 'bg-blue-50 border-blue-400 hover:bg-blue-100'
+                                    : 'bg-gray-100 border-gray-500 hover:bg-gray-400'
+                        }`}
                     >
                         {/* Boutons modifier / supprimer alignés à droite */}
                         <div className="flex justify-between items-center gap-2 p-2">
@@ -527,8 +510,8 @@ const InterventionsPreventives = () => {
                             )}
                         </div>
                     </div>
-                    ))}       
-                 
+                    ); })}
+
             </section>
                 <ConfirmModal
                     show={showConfirmModal}
