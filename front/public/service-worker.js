@@ -18,15 +18,22 @@ self.addEventListener('install', (event) => {
 // ── Activation : purge des anciens caches ────────────────────────────────────
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((k) => k !== CACHE_STATIC && k !== CACHE_API)
-          .map((k) => caches.delete(k))
+    caches.keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((k) => k !== CACHE_STATIC && k !== CACHE_API)
+            .map((k) => caches.delete(k))
+        )
       )
-    )
+      .then(() => self.clients.claim())
+      .then(() =>
+        // Force le rechargement de tous les onglets ouverts après purge du cache
+        self.clients.matchAll({ type: 'window' }).then((clients) => {
+          for (const client of clients) client.navigate(client.url);
+        })
+      )
   );
-  self.clients.claim();
 });
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
@@ -90,8 +97,11 @@ async function cacheFirstStatic(request) {
     }
     return response;
   } catch {
-    // Fallback SPA : retourner index.html pour les routes inconnues
-    const indexFallback = await caches.match('/index.html');
-    return indexFallback ?? new Response('Hors ligne', { status: 503 });
+    // Fallback SPA uniquement pour les navigations HTML, jamais pour les assets JS/CSS
+    if (request.mode === 'navigate') {
+      const indexFallback = await caches.match('/index.html');
+      return indexFallback ?? new Response('Hors ligne', { status: 503 });
+    }
+    return new Response('Hors ligne', { status: 503 });
   }
 }

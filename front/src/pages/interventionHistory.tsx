@@ -29,6 +29,9 @@ const InterventionHistory = () => {
 
   const [filterStatus, setFilterStatus] = useState<number | null>(null);
   const [filterPriority, setFilterPriority] = useState<number | null>(null);
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterDateFrom, setFilterDateFrom] = useState('');
+  const [filterDateTo, setFilterDateTo] = useState('');
   const [searchText, setSearchText] = useState('');
   const [displayInterventions, setDisplayInterventions] = useState<IIntervention[]>([]);
 
@@ -44,6 +47,21 @@ const InterventionHistory = () => {
 
       if (filterPriority !== null) {
         filtered = filtered.filter((i) => i.priorityId === filterPriority);
+      }
+
+      if (filterType !== null) {
+        filtered = filtered.filter((i) => (i.type?.label ?? i.type_text ?? '—') === filterType);
+      }
+
+      if (filterDateFrom) {
+        const from = new Date(filterDateFrom);
+        filtered = filtered.filter((i) => new Date(i.created_at) >= from);
+      }
+
+      if (filterDateTo) {
+        const to = new Date(filterDateTo);
+        to.setHours(23, 59, 59, 999);
+        filtered = filtered.filter((i) => new Date(i.created_at) <= to);
       }
 
       if (searchText.trim()) {
@@ -63,7 +81,7 @@ const InterventionHistory = () => {
 
       setDisplayInterventions(filtered);
     },
-    [service, filterStatus, filterPriority, searchText]
+    [service, filterStatus, filterPriority, filterType, filterDateFrom, filterDateTo, searchText]
   );
 
   useEffect(() => {
@@ -87,6 +105,15 @@ const InterventionHistory = () => {
       socket.off('update_status_intervention', handleUpdate);
     };
   }, [socket, refetch, updateDisplay]);
+
+  const availableTypes = Array.isArray(data)
+    ? [...new Set(
+        data
+          .filter((i) => i.serviceId === service?.id)
+          .map((i) => i.type?.label ?? i.type_text ?? null)
+          .filter((t): t is string => !!t)
+      )]
+    : [];
 
   if (!service) return <p>Service non trouvé</p>;
   if (isLoading) return <p>Chargement...</p>;
@@ -177,6 +204,60 @@ const InterventionHistory = () => {
             >
               Urgent
             </button>
+          </div>
+
+          {/* Filtre type */}
+          {availableTypes.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2">
+              <button
+                type="button"
+                className={`btn btn-sm ${filterType === null ? 'btn-neutral text-white' : 'btn-outline'}`}
+                onClick={() => setFilterType(null)}
+              >
+                Tous les types
+              </button>
+              {availableTypes.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className={`btn btn-sm ${filterType === t ? 'btn-accent text-white' : 'btn-outline btn-accent'}`}
+                  onClick={() => setFilterType(filterType === t ? null : t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Filtre date */}
+          <div className="flex flex-wrap justify-center items-center gap-3 font-normal">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600 font-semibold">Du</label>
+              <input
+                type="date"
+                value={filterDateFrom}
+                onChange={(e) => setFilterDateFrom(e.target.value)}
+                className="input input-bordered input-sm bg-white text-black"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600 font-semibold">Au</label>
+              <input
+                type="date"
+                value={filterDateTo}
+                onChange={(e) => setFilterDateTo(e.target.value)}
+                className="input input-bordered input-sm bg-white text-black"
+              />
+            </div>
+            {(filterDateFrom || filterDateTo) && (
+              <button
+                type="button"
+                className="btn btn-sm btn-outline"
+                onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); }}
+              >
+                Réinitialiser dates
+              </button>
+            )}
           </div>
 
           <p className="text-gray-500 font-normal text-sm">
