@@ -257,15 +257,18 @@ const InterventionsPreventives = () => {
 
                     {filteredPreventives?.map((preventive) => {
                     const isOverdue = preventive.date && new Date(preventive.date) < new Date();
+                    const isInProgress = preventive.statusId === 2;
                     return (
                     <div
                         key={preventive.id}
                         className={`border-4 w-3/4 mx-auto my-2 rounded shadow transition-colors ${
-                            isOverdue
-                                ? 'bg-red-100 border-red-500 hover:bg-red-200'
-                                : preventive.is_recurring
-                                    ? 'bg-blue-50 border-blue-400 hover:bg-blue-100'
-                                    : 'bg-gray-100 border-gray-500 hover:bg-gray-400'
+                            isInProgress
+                                ? 'bg-green-100/70 border-green-500 hover:bg-green-200/70'
+                                : isOverdue
+                                    ? 'bg-red-100 border-red-500 hover:bg-red-200'
+                                    : preventive.is_recurring
+                                        ? 'bg-blue-50 border-blue-400 hover:bg-blue-100'
+                                        : 'bg-gray-100 border-gray-500 hover:bg-gray-400'
                         }`}
                     >
                         {/* Boutons modifier / supprimer alignés à droite */}
