@@ -2,10 +2,9 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useCreateIntervention } from "../../hooks/useInterventions";
-import serviceService from "../../services/services.service";
+import { useService } from "../../hooks/useService";
 import userService from "../../services/user.service";
 import type { IInterventionFormData } from '../../types/IInterventions';
-import type { IService } from "../../types/IService";
 import SearchBarLocalisation from "../SearchBars/searchBarLocalisation";
 import SearchBarMaterialEmployee from "../SearchBars/searchBarMaterialEmployee";
 import SearchBarPriority from '../SearchBars/searchBarPriority';
@@ -14,6 +13,7 @@ import SearchBarType from "../SearchBars/searchBarTyp";
 type Props = {
   show: boolean;
   onClose: () => void;
+  serviceLabel?: string;
 };
 
 type Toast = {
@@ -39,6 +39,13 @@ function ToastContainer({ toasts }: ToastContainerProps) {
   );
 };
 
+function serviceDisplayName(label: string) {
+  return label
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 const emptyForm: IInterventionFormData = {
   title: "",
   description: "",
@@ -56,10 +63,10 @@ const emptyForm: IInterventionFormData = {
   material_text: null,
 };
 
-export default function FormInterventionRequestEmployee ({ show, onClose }: Props) {
+export default function FormInterventionRequestEmployee ({ show, onClose, serviceLabel }: Props) {
 
   const [toasts, setToasts] = React.useState<Toast[]>([]);
-  const [services, setServices] = useState<IService[]>([]);
+  const { service, isLoading: isServiceLoading } = useService(serviceLabel);
 
   // Toggles saisie libre
   const [freeTextType, setFreeTextType] = useState(false);
@@ -77,16 +84,10 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
   const [form, setForm] = useState<IInterventionFormData>(emptyForm);
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const data = await serviceService.getAllServices();
-        setServices(data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des services :", error);
-      }
-    };
-    if (show) fetchServices();
-  }, [show]);
+    if (service) {
+      setForm((prev) => ({ ...prev, serviceId: service.id }));
+    }
+  }, [service]);
 
   const { mutate: createIntervention } = useCreateIntervention();
 
@@ -200,21 +201,15 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
           </div>
         </fieldset>
 
-        <fieldset className="flex gap-2">
-          <label htmlFor="serviceId" className="font-bold">Service concerné</label>
-          <select
-            id="serviceId"
-            name="serviceId"
-            required
-            className="focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400 mb-4"
-            value={form.serviceId ?? ""}
-            onChange={(e) => setForm((prev) => ({ ...prev, serviceId: Number(e.target.value) }))}
-          >
-            <option value="">-- Sélectionner un service --</option>
-            {services.map((s) => (
-              <option key={s.id} value={s.id}>{s.label}</option>
-            ))}
-          </select>
+        <fieldset className="flex gap-2 items-center mb-4">
+          <span className="font-bold">Service concerné</span>
+          {isServiceLoading ? (
+            <span className="text-gray-500">Chargement du service...</span>
+          ) : service ? (
+            <span className="badge badge-neutral text-white font-bold px-3 py-3">{serviceDisplayName(service.label)}</span>
+          ) : (
+            <span className="text-error font-semibold">Service introuvable pour cette page. Contactez un administrateur.</span>
+          )}
         </fieldset>
 
         <div className="grid grid-cols-2 gap-2">
@@ -381,7 +376,7 @@ export default function FormInterventionRequestEmployee ({ show, onClose }: Prop
             <button type="button" onClick={onClose} className="btn btn-error hover:text-white">
               Annuler
             </button>
-            <button type="submit" className="btn btn-success font-bold hover:text-white">
+            <button type="submit" className="btn btn-success font-bold hover:text-white" disabled={!service}>
               Confirmer ma demande
             </button>
           </div>

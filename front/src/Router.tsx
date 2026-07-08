@@ -33,7 +33,7 @@ export default function Router(){
             <Route path="/preventifs/:serviceLabel" element={<InterventionsPreventives />} />
             <Route path="/calendrier/:serviceLabel" element={<CalendarPreventives />} />
             <Route path="/materiel/:serviceLabel" element={<MaterialPage />} />
-            <Route path="/sos" element={<RequestEmployees />} />
+            <Route path="/sos/:serviceLabel" element={<RequestEmployees />} />
             <Route path="/magasin/:serviceLabel" element={<Store />} />
             <Route path="/magasin/sortie/:serviceLabel" element={<StockOut />} />
             <Route path="/magasin/entree/:serviceLabel" element={<StockIn />} />
