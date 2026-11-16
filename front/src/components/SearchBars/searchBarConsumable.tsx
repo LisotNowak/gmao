@@ -4,16 +4,19 @@ import { useStoreMaterials } from "../../hooks/useMaterials";
 
 type Props = {
   onSelect: (materialId: number) => void;
+  // Inclure aussi les consommables à recommander (statut 7)
+  includeToOrder?: boolean;
 };
 
-export default function SearchBarStore({ onSelect }: Props) {
+export default function SearchBarStore({ onSelect, includeToOrder = false }: Props) {
 
   const [searchText, setSearchText] = useState('');
   const [showResults, setShowResults] = useState(false);
-  const { data: allMaterialsStore, error, status } = useStoreMaterials(); 
+  const { data: allMaterialsStore, error, status } = useStoreMaterials();
 
   const filteredConsumables = allMaterialsStore?.filter((material) => {
-    if (material.statusId !== 6) return false;
+    const isConsumable = material.statusId === 6 || (includeToOrder && material.statusId === 7);
+    if (!isConsumable) return false;
     const search = searchText.toLowerCase();
     const matchText =
         material.name?.toLowerCase().includes(search) ||

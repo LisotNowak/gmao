@@ -1,4 +1,4 @@
-import { mdiArrowLeftBottom, mdiCheck, mdiPlus, mdiTrashCan } from "@mdi/js";
+import { mdiArrowLeftBottom, mdiCheck, mdiOil, mdiPlus, mdiTrashCan } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,11 +11,12 @@ import movementService from "../services/movement.service";
 const StockIn = () => {
 
   const [showStockInForm, setStockInForm] = useState(false);
+  const [isConsumableForm, setIsConsumableForm] = useState(false);
   const [stockInList, setStockInList] = useState<
     { materialId: number; quantity: number }[]
   >([]);
 
-  const { data: allMaterials = [] } = useStoreMaterials();
+  const { data: allMaterials = [], refetch: refetchMaterials } = useStoreMaterials();
 
   const handleSubmit = (materialId: number, quantity: number) => {
     setStockInList((prev) => {
@@ -39,6 +40,7 @@ const StockIn = () => {
       name: material?.name ?? "Inconnu",
       brand: material?.brand ?? "",
       model: material?.model ?? "",
+      currentQuantity: material?.quantity ?? 0,
       quantity: item.quantity,
     };
   }); 
@@ -47,7 +49,10 @@ const StockIn = () => {
     try {    
       for (const item of stockInList) {
         const material = allMaterials.find((mat) => mat.id === item.materialId);
-        if (!material) continue; 
+        if (!material) continue;
+
+        // Un consommable reste consommable (6), même s'il était à recommander (7)
+        const isConsumable = material.statusId === 6 || material.statusId === 7;
 
         await materialService.updateMaterialStore({
           id: material.id,
@@ -57,12 +62,14 @@ const StockIn = () => {
           quantity: material.quantity,
           is_store: true,
           reference: material.reference,
-          statusId: 4
+          statusId: isConsumable ? 6 : 4
         });
         await movementService.createStockIn(material.id, item.quantity);
       };
       alert("Entrée en  stock validée !");
-      setStockInList([]); 
+      setStockInList([]);
+      // Recharger les quantités à jour
+      refetchMaterials();
     } catch (error) {
       console.error(error);
       alert("Erreur lors de la mise à jour du stock.");
@@ -79,14 +86,25 @@ const StockIn = () => {
       <section>
         <h1 className="text-center text-3xl font-bold">Entrée en  stock</h1>
 
-        <div className="flex flex-col items-center my-10">
-          <button
-            type="button"
-            className="btn btn-circle btn-success w-15 h-15 btn-accent hover:bg-accent-focus hover:text-white"
-            onClick={() => setStockInForm(true)}>            
-            <Icon path={mdiPlus} size={2} />
-          </button>
-          <p className="text-black font-bold text-center">Ajout article</p>
+        <div className="flex justify-center gap-16 my-10">
+          <div className="flex flex-col items-center">
+            <button
+              type="button"
+              className="btn btn-circle btn-success w-15 h-15 btn-accent hover:bg-accent-focus hover:text-white"
+              onClick={() => { setIsConsumableForm(false); setStockInForm(true); }}>
+              <Icon path={mdiPlus} size={2} />
+            </button>
+            <p className="text-black font-bold text-center">Ajout article</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <button
+              type="button"
+              className="btn btn-circle btn-success w-15 h-15 btn-accent hover:bg-accent-focus hover:text-white"
+              onClick={() => { setIsConsumableForm(true); setStockInForm(true); }}>
+              <Icon path={mdiOil} size={2} />
+            </button>
+            <p className="text-black font-bold text-center">Ajout consommable</p>
+          </div>
         </div>
 
         <div className="fixed top-40 left-4 flex flex-col justify-center rounded-xl p-1 items-center z-50 hover:text-white hover:bg-primary">
@@ -107,6 +125,9 @@ const StockIn = () => {
                   <p className="font-semibold">{item.name}</p>
                   <p className="text-sm text-gray-600">
                     {item.brand} – {item.model}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Stock actuel : {item.currentQuantity} → après entrée : <span className="font-bold">{item.currentQuantity + item.quantity}</span>
                   </p>
                 </div>
                 <div className="text-right flex flex-col items-center">
@@ -157,6 +178,7 @@ const StockIn = () => {
         show={showStockInForm}
         onClose={() => setStockInForm(false)}
         onSubmit={handleSubmit}
+        consumable={isConsumableForm}
       />
     </main>
   );
