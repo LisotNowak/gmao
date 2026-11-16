@@ -24,6 +24,22 @@ const errorHandler = (
     });
   }
 
+  // Prisma : valeur déjà utilisée sur un champ unique → 409 Conflict
+  if (err.code === 'P2002') {
+    const target = err.meta?.target;
+    const fields = Array.isArray(target) ? target.join(', ') : target;
+    return res.status(409).json({
+      message: `Valeur déjà utilisée : ${fields ?? 'champ unique'}.`,
+    });
+  }
+
+  // Prisma : référence vers un élément inexistant (catégorie, service…) → 400
+  if (err.code === 'P2003') {
+    return res.status(400).json({
+      message: `Référence invalide : ${err.meta?.field_name ?? 'élément lié introuvable'}.`,
+    });
+  }
+
   const status = (err as IErrorDetails).status || 500;
   const message = err.message || 'Une erreur est survenue sur le serveur';
   const details = (err as IErrorDetails).details || undefined;

@@ -102,24 +102,33 @@ async function main() {
   });
   if (!category) throw new Error("Catégorie 'tracteur' introuvable !");
 
+  // Le nom n'est plus unique : on cherche le matériel avant de créer ou mettre à jour
   for (const name of materialNames) {
-    await prisma.material.upsert({
-      where: { name },
-      update: {
-        serviceId: atelierService.id,
-        categoryId: category.id,
-        updated_at: new Date(),
-      },
-      create: {
-        name,
-        mimetype: 'application/octet-stream',
-        is_store: false,
-        serviceId: atelierService.id,
-        categoryId: category.id,
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
+    const existing = await prisma.material.findFirst({
+      where: { name, serviceId: atelierService.id },
     });
+
+    if (existing) {
+      await prisma.material.update({
+        where: { id: existing.id },
+        data: {
+          categoryId: category.id,
+          updated_at: new Date(),
+        },
+      });
+    } else {
+      await prisma.material.create({
+        data: {
+          name,
+          mimetype: 'application/octet-stream',
+          is_store: false,
+          serviceId: atelierService.id,
+          categoryId: category.id,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+    }
   }
   console.log("✅ Matériels insérées avec succès");
 }

@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: <Linter capricieux> */
+import { isAxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useParams } from "react-router-dom";
@@ -97,6 +98,11 @@ useEffect(() => {
     return;
   };
 
+  if (!form.categoryId) {
+    addToast("Veuillez choisir une catégorie.", "error");
+    return;
+  };
+
   try {
     
     createMaterialStore(
@@ -119,7 +125,8 @@ useEffect(() => {
         },        
         onError: (err) => {
           console.error("Erreur création du matériel", err);
-          addToast("Erreur lors de la création du matériel", "error");
+          const serverMessage = isAxiosError(err) ? err.response?.data?.message : undefined;
+          addToast(serverMessage ?? "Erreur lors de la création du matériel", "error");
         },
       }
     );   
